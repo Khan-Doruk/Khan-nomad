@@ -53,6 +53,8 @@ modules can't do it either (serial data only, no audio).
 
 ## Wiring
 
+![Bluetooth music player wiring diagram](images/music-player-wiring.svg)
+
 Power path:
 
 ```

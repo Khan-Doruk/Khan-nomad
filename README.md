@@ -21,6 +21,20 @@ Stream movies, music, books, and shows anywhere - no internet required.</p>
 
 ---
 
+## In this fork: two-device build
+
+This fork ([Khan-Doruk/Khan-nomad](https://github.com/Khan-Doruk/Khan-nomad)) is planning a two-device setup on top of the original Jcorp Nomad. Both are planning docs only, nothing is built or tested yet.
+
+**1. Main Nomad on an ESP32-S3 DevKitC-1 (N16R8)**: runs the standard Nomad firmware on a plain DevKitC-1 with an external microSD SDIO breakout and an optional 1.47" screen. Full guide: [docs/ideas/main-nomad-on-devkitc.md](docs/ideas/main-nomad-on-devkitc.md)
+
+![Main Nomad wiring on ESP32-S3 DevKitC-1](docs/ideas/images/main-nomad-devkitc-wiring.svg)
+
+**2. Bluetooth music player**: an ESP32 (WROOM-32) that joins Nomad's WiFi, streams MP3s and plays them on Bluetooth headphones or a speaker, with physical buttons and an OLED. Full guide: [docs/ideas/bluetooth-music-player.md](docs/ideas/bluetooth-music-player.md)
+
+![Bluetooth music player wiring diagram](docs/ideas/images/music-player-wiring.svg)
+
+---
+
 > **Firmware 4.6** - The biggest update since Mk4, and everything in it has come over from the experimental branch. exFAT card support, offline maps with turn by turn directions, game ROMs and a shelf of built-in games, local multiplayer, TV support over DLNA, a WiFi Mode that joins your home network, offline translation, and recipe + 3D model libraries. Everything from Mk4 is still here and still works, this adds on top of it.
 >
 > Some of this is newer than the rest. The parts I'd call settled are exFAT, the reader and the media pages. Maps, WiFi Mode, DLNA and Translate work are all tested in full, but they have had less time in front of other people's hardware than the rest of the project. Known rough edges are listed near the bottom, everything works but some is getting more improvments so its user friendly. Maps in particular is tricky right now. 
