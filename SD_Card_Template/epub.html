@@ -53,6 +53,7 @@
           --text: ${colors.textDark} !important;
           --muted: ${colors.mutedDark} !important;
           --primary: ${colors.primaryDarkTheme} !important;
+          --header-bg: ${colors.headerDarkTheme || colors.primaryDarkTheme} !important;
         }
       `;
       document.head.appendChild(style);
@@ -100,7 +101,7 @@
         }
 
         .reader-header {
-            background: var(--primary);
+            background: var(--header-bg, var(--primary));
             color: var(--header-text);
             padding: 12px 16px;
             display: flex;

@@ -34,9 +34,9 @@
 
 :root {
   /* === BRAND COLORS  === */
-  --primary: #007bff;
-  --primary-dark: #0056b3;
-  --primary-600: #0066d6;
+  --primary: #1B3A4B;
+  --primary-dark: #12293A;
+  --primary-600: #234B61;
   /* white for text/icons on a colored bg. a bunch of pages used var(--color-white) but it was never defined */
   --color-white: #ffffff;
   --success: #28a745;
@@ -46,18 +46,18 @@
   --secondary: #6c757d;
 
   /* === LIGHT THEME COLORS === */
-  --bg: #f4f4f9;
-  --card: #ffffff;
-  --card-bg: #ffffff;
-  --card-border: #dee2e6;
-  --text: #333333;
-  --text-light: #212529;
-  --muted: #6b7280;
+  --bg: #F6EFE3;
+  --card: #FFFDF8;
+  --card-bg: #FFFDF8;
+  --card-border: #E6DBC8;
+  --text: #2B2A26;
+  --text-light: #2B2A26;
+  --muted: #7A6F60;
   --line: rgba(11, 18, 32, 0.06);
   --header-text: #ffffff;
 
   /* === STATE COLORS === */
-  --playing-bg: #0b63ff;
+  --playing-bg: #C8553D;
   --playing-text: #ffffff;
 
   /* === TYPOGRAPHY === */
@@ -140,23 +140,24 @@
 
 body.dark {
   /* === DARK THEME COLORS === */
-  --bg: #071226;
-  --card: #071722;
-  --card-bg: #1e1e1e;
-  --card-border: #343a40;
-  --text: #eaf6ff;
-  --text-light: #e9ecef;
-  --muted: #93a9c6;
+  --bg: #0F2230;
+  --card: #16303F;
+  --card-bg: #16303F;
+  --card-border: #24475A;
+  --text: #F4E9D4;
+  --text-light: #F4E9D4;
+  --muted: #A8B5BC;
   --line: rgba(255, 255, 255, 0.04);
   --header-text: #ffffff;
 
   /* === DARK BRAND COLORS === */
-  --primary: #4aa3ff;
-  --primary-dark: #2f84ff;
-  --primary-600: #0a74e0;
+  --primary: #D97B4A;
+  --header-bg: #12293A;
+  --primary-dark: #B9612F;
+  --primary-600: #C86A3B;
 
   /* === DARK STATE COLORS === */
-  --playing-bg: #0a84ff;
+  --playing-bg: #D97B4A;
   --playing-text: #ffffff;
 
   /* === DARK SHADOWS === */
@@ -325,7 +326,7 @@ header {
   justify-content: space-between;
   gap: var(--spacing-md);
   padding: var(--spacing-lg) 20px;
-  background: var(--primary);
+  background: var(--header-bg, var(--primary));
   color: var(--header-text);
   position: sticky;
   top: 0;

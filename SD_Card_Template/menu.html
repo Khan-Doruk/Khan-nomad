@@ -4,8 +4,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<meta name="description" content="Jcorp Nomad Menu" />
-<title>Jcorp Nomad</title>
+<meta name="description" content="Khan-Nomad Menu" />
+<title>Khan-Nomad</title>
 <link rel="icon" href="/favicon.ico" />
 <link rel="stylesheet" href="/master.css">
 <script>
@@ -60,6 +60,7 @@
           --text: ${colors.textDark} !important;
           --muted: ${colors.mutedDark} !important;
           --primary: ${colors.primaryDarkTheme} !important;
+          --header-bg: ${colors.headerDarkTheme || colors.primaryDarkTheme} !important;
         }
       `;
       document.head.appendChild(style);
@@ -108,7 +109,7 @@
     border-bottom:1px solid var(--line);
     position:sticky;
     top:0;
-    background:var(--primary);
+    background:var(--header-bg, var(--primary));
     color:#fff;
     z-index:80;
     backdrop-filter:blur(6px);
@@ -773,10 +774,10 @@
 <header>
   <div class="brand">
     <div class="logo" aria-hidden="false">
-      <img src="/logo.png" alt="Jcorp Nomad logo" onerror="this.style.display='none'">
+      <img src="/logo.png" alt="Khan-Nomad logo" onerror="this.style.display='none'">
     </div>
     <div style="min-width:0">
-      <div class="title" aria-label="Application title">Jcorp Nomad</div>
+      <div class="title" aria-label="Application title">Khan-Nomad</div>
     </div>
   </div>
 
@@ -794,7 +795,7 @@
 <main>
   <div class="content-area">
     <div class="welcome-center">
-      <h1>Jcorp Nomad</h1>
+      <h1>Khan-Nomad</h1>
       <p>Your personal Media Library</p>
     </div>
 

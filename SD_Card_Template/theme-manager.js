@@ -190,6 +190,7 @@ const ThemeManager = {
         --text: ${colors.textDark} !important;
         --muted: ${colors.mutedDark} !important;
         --primary: ${colors.primaryDarkTheme} !important;
+        --header-bg: ${colors.headerDarkTheme || colors.primaryDarkTheme} !important;
       }
     `;
     

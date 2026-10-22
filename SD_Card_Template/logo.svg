@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 120 120">
+  <title>Khan-Nomad</title>
+  <rect width="120" height="120" rx="26" fill="#1B3A4B"/>
+  <g fill="#F4E9D4">
+    <circle cx="24" cy="24" r="1.6"/>
+    <circle cx="96" cy="18" r="2"/>
+    <circle cx="102" cy="44" r="1.4"/>
+    <circle cx="18" cy="50" r="1.2"/>
+  </g>
+  <path d="M54.3 34.3A8 8 0 0 1 65.7 34.3M50.1 30.1A14 14 0 0 1 69.9 30.1M45.9 25.9A20 20 0 0 1 74.1 25.9" fill="none" stroke="#F4E9D4" stroke-width="3.6" stroke-linecap="round"/>
+  <path d="M22 66Q60 26 98 66Z" fill="#D97B4A"/>
+  <rect x="28" y="64" width="64" height="30" rx="2" fill="#EBD9B4"/>
+  <rect x="28" y="68" width="64" height="5" fill="#C8553D"/>
+  <path d="M34 70.5l3-2.5 3 2.5-3 2.5zM46 70.5l3-2.5 3 2.5-3 2.5zM68 70.5l3-2.5 3 2.5-3 2.5zM80 70.5l3-2.5 3 2.5-3 2.5z" fill="#EBD9B4"/>
+  <rect x="53" y="76" width="14" height="18" rx="2" fill="#6B2D1F"/>
+  <ellipse cx="60" cy="46" rx="6" ry="2.6" fill="#6B2D1F"/>
+  <rect x="14" y="94" width="92" height="3" rx="1.5" fill="#EBD9B4" opacity=".55"/>
+</svg>

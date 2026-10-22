@@ -228,7 +228,8 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("Content-Length", str(length))
         self.send_header("Accept-Ranges", "bytes")
         self.send_header("Access-Control-Allow-Origin", "*")
-        self.send_header("Cache-Control", "no-cache" if ctype == "text/html" else "public, max-age=600")
+        # always revalidate: this is for editing the interface, so changes must show on reload
+        self.send_header("Cache-Control", "no-cache")
         if status == 206:
             self.send_header("Content-Range", "bytes %d-%d/%d" % (start, end, size))
         self.end_headers()
@@ -417,9 +418,14 @@ class Handler(BaseHTTPRequestHandler):
             n.log("info", "Settings updated")
             return self.send_json({"status": "ok"})
         if path == "/api/ui-config":
-            real = n.disk("/.system-ui.json")
-            with open(real, "wb") as f:
-                f.write(raw)
+            # admin posts form-encoded body=<json>; accept raw JSON too
+            body = fields.get("body") if isinstance(fields, dict) and "body" in fields else raw.decode("utf-8", "replace")
+            try:
+                json.loads(body)
+            except ValueError:
+                return self.send_json({"error": "Invalid JSON"}, 400)
+            with open(n.disk("/.system-ui.json"), "w", encoding="utf-8") as f:
+                f.write(body)
             return self.send_json({"status": "ok"})
         # everything else (reindex, restart, LEDs, brightness...) just succeeds
         n.log("info", "Ignored (fake): " + path)
