@@ -15,6 +15,7 @@ for: built-in 1.47" screen, microSD slot and RGB LED, so no wiring is needed.
 
 ### Before the board arrives
 
+- [x] Fake Nomad on the laptop to preview the interface ([tools/fake-nomad](../../tools/fake-nomad/README.md))
 - [ ] Print the case: `NomadCasev30.stl` (the USB-A one, not `_USB-C`)
 - [ ] Convert movies to MP4 with the preset in `tools/handbrake`
 - [ ] Collect music (MP3), books (ePub/PDF), comics (CBZ)

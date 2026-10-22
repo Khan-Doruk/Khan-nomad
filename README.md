@@ -36,6 +36,8 @@ This fork ([Khan-Doruk/Khan-nomad](https://github.com/Khan-Doruk/Khan-nomad)) is
 
 ![Bluetooth music player wiring diagram](docs/ideas/images/music-player-wiring.svg)
 
+**Fake Nomad (no board needed)**: run the Nomad web interface on your computer with `python tools/fake-nomad/fake_nomad.py` and open <http://localhost:8080>. Guide: [tools/fake-nomad/README.md](tools/fake-nomad/README.md)
+
 **Alternative (experimental)**: running Nomad on an ESP32-S3 DevKitC-1 (N16R8) with an external microSD SDIO breakout. Not the main build anymore, kept for experiments. Guide: [docs/ideas/main-nomad-on-devkitc.md](docs/ideas/main-nomad-on-devkitc.md)
 
 ---
