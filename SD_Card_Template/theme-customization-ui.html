@@ -58,6 +58,7 @@
           --text: ${colors.textDark} !important;
           --muted: ${colors.mutedDark} !important;
           --primary: ${colors.primaryDarkTheme} !important;
+          --header-bg: ${colors.headerDarkTheme || colors.primaryDarkTheme} !important;
         }
       `;
       document.head.appendChild(style);
@@ -628,7 +629,7 @@
     }
 
     function loadCurrentColors() {
-      const defaultTheme = themes.find(t => t.id === 'default-blue');
+      const defaultTheme = themes.find(t => t.id === 'steppe-night') || themes.find(t => t.id === 'default-blue');
       if (defaultTheme) {
         currentColors = { ...defaultTheme.colors };
         applyColorsToInputs(defaultTheme.colors);
@@ -692,9 +693,9 @@
       document.getElementById('btn-reset').addEventListener('click', async () => {
         const result = await ThemeManager.resetTheme();
         if (result.success) {
-          const defaultTheme = themes.find(t => t.id === 'default-blue');
+          const defaultTheme = themes.find(t => t.id === 'steppe-night') || themes.find(t => t.id === 'default-blue');
           if (defaultTheme) {
-            selectTheme('default-blue');
+            selectTheme(defaultTheme.id);
           }
           showStatus(result.message + ' Refresh to see changes across all pages.', 'success');
           setTimeout(() => location.reload(), 1000);

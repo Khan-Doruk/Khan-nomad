@@ -228,7 +228,8 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("Content-Length", str(length))
         self.send_header("Accept-Ranges", "bytes")
         self.send_header("Access-Control-Allow-Origin", "*")
-        self.send_header("Cache-Control", "no-cache" if ctype == "text/html" else "public, max-age=600")
+        # always revalidate: this is for editing the interface, so changes must show on reload
+        self.send_header("Cache-Control", "no-cache")
         if status == 206:
             self.send_header("Content-Range", "bytes %d-%d/%d" % (start, end, size))
         self.end_headers()

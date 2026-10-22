@@ -2,6 +2,25 @@
   "version": "1.0",
   "themes": [
     {
+      "id": "steppe-night",
+      "name": "Steppe Night",
+      "description": "Khan-Nomad default: yurt teal, cream and terracotta",
+      "colors": {
+        "primary": "#1B3A4B",
+        "primaryDark": "#12293A",
+        "bgLight": "#F6EFE3",
+        "cardLight": "#FFFDF8",
+        "textLight": "#2B2A26",
+        "mutedLight": "#7A6F60",
+        "bgDark": "#0F2230",
+        "cardDark": "#16303F",
+        "textDark": "#F4E9D4",
+        "mutedDark": "#A8B5BC",
+        "primaryDarkTheme": "#D97B4A",
+        "headerDarkTheme": "#12293A"
+      }
+    },
+    {
       "id": "default-blue",
       "name": "Default Blue",
       "description": "Classic Jcorp Nomad blue theme",
