@@ -1,6 +1,9 @@
 # Idea: main Nomad on an ESP32-S3 DevKitC-1 (N16R8)
 
-Status: **planned, untested**. Nobody has confirmed this board runs Nomad yet.
+Status: **alternative / experimental, untested**. Nobody has confirmed this board
+runs Nomad yet. The main build in this fork now uses the official Waveshare
+ESP32-S3-LCD-1.47 (see [build-plan.md](build-plan.md)); this guide is kept for
+experimenting with the spare DevKitC-1.
 
 Nomad officially targets the Waveshare ESP32-S3-LCD-1.47. This doc covers
 running it on a plain **ESP32-S3 DevKitC-1 with the ESP32-S3-WROOM-1-N16R8
