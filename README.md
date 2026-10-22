@@ -23,15 +23,20 @@ Stream movies, music, books, and shows anywhere - no internet required.</p>
 
 ## In this fork: two-device build
 
-This fork ([Khan-Doruk/Khan-nomad](https://github.com/Khan-Doruk/Khan-nomad)) is planning a two-device setup on top of the original Jcorp Nomad. Both are planning docs only, nothing is built or tested yet.
+This fork ([Khan-Doruk/Khan-nomad](https://github.com/Khan-Doruk/Khan-nomad)) is building a two-device setup on top of the original Jcorp Nomad. Progress and the full checklist: [docs/ideas/build-plan.md](docs/ideas/build-plan.md)
 
-**1. Main Nomad on an ESP32-S3 DevKitC-1 (N16R8)**: runs the standard Nomad firmware on a plain DevKitC-1 with an external microSD SDIO breakout and an optional 1.47" screen. Full guide: [docs/ideas/main-nomad-on-devkitc.md](docs/ideas/main-nomad-on-devkitc.md)
+| Device | Board | Status |
+|---|---|---|
+| **1. Main Nomad** | Official **Waveshare ESP32-S3-LCD-1.47** (USB-A, SKU 28317) | Board ordered, waiting for delivery |
+| **2. Bluetooth music player** | ESP32-WROOM-32 DevKit | Planned, parts not bought yet |
 
-![Main Nomad wiring on ESP32-S3 DevKitC-1](docs/ideas/images/main-nomad-devkitc-wiring.svg)
+**1. Main Nomad**: the stock Nomad build on the official board. No wiring needed: flash the **USB-A build** from [nomadflash.jcorptech.net](https://nomadflash.jcorptech.net), set up the SD card, and print `NomadCasev30.stl` for the case.
 
 **2. Bluetooth music player**: an ESP32 (WROOM-32) that joins Nomad's WiFi, streams MP3s and plays them on Bluetooth headphones or a speaker, with physical buttons and an OLED. Full guide: [docs/ideas/bluetooth-music-player.md](docs/ideas/bluetooth-music-player.md)
 
 ![Bluetooth music player wiring diagram](docs/ideas/images/music-player-wiring.svg)
+
+**Alternative (experimental)**: running Nomad on an ESP32-S3 DevKitC-1 (N16R8) with an external microSD SDIO breakout. Not the main build anymore, kept for experiments. Guide: [docs/ideas/main-nomad-on-devkitc.md](docs/ideas/main-nomad-on-devkitc.md)
 
 ---
 
