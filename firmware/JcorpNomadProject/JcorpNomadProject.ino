@@ -369,7 +369,7 @@ struct AdminSettings {
   String rgbMode = "off";
   String rgbColor = "#ff0000";
   String adminPassword = "";
-  String wifiSSID = "Jcorp_Nomad";
+  String wifiSSID = "Khan-Nomad";
   String wifiPassword = "password";
   int brightness = 100;            // percent 0-100 (Set_Backlight range); 230 was out-of-range and ignored
   bool autoGenerateMedia = true;   // check for new files on boot (default on)
@@ -1269,7 +1269,7 @@ bool loadSettings() {
   settings.rgbMode = doc["rgbMode"] | "off";
   settings.rgbColor = doc["rgbColor"] | "#ff0000";
   settings.adminPassword = doc["adminPassword"] | "";
-  settings.wifiSSID = doc["wifiSSID"] | "Jcorp_Nomad";
+  settings.wifiSSID = doc["wifiSSID"] | "Khan-Nomad";
   settings.wifiPassword = doc["wifiPassword"] | "password";
   settings.brightness = doc["brightness"] | 100;
   // brightness is 0-100 (Set_Backlight ignores >100). old builds defaulted to 230, clamp it
