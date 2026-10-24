@@ -93,7 +93,7 @@ void ui_Screen1_screen_init(void)
     lv_obj_set_x(ui_ssidlabel, -2);
     lv_obj_set_y(ui_ssidlabel, -91);
     lv_obj_set_align(ui_ssidlabel, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_ssidlabel, " Jcorp_Nomad");
+    lv_label_set_text(ui_ssidlabel, " Khan-Nomad");
     lv_obj_set_style_text_color(ui_ssidlabel, lv_color_hex(0xA5E0F9), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_ssidlabel, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_font(ui_ssidlabel, &ui_font_Font1, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -120,8 +120,8 @@ void ui_Screen1_screen_init(void)
 
     ui_Image3 = lv_img_create(ui_Screen1);
     lv_img_set_src(ui_Image3, &ui_img_1859342711);
-    lv_obj_set_width(ui_Image3, LV_SIZE_CONTENT);   /// 83
-    lv_obj_set_height(ui_Image3, LV_SIZE_CONTENT);    /// 110
+    lv_obj_set_width(ui_Image3, LV_SIZE_CONTENT);   /// 100
+    lv_obj_set_height(ui_Image3, LV_SIZE_CONTENT);    /// 100
     lv_obj_set_x(ui_Image3, 0);
     lv_obj_set_y(ui_Image3, 20);
     lv_obj_set_align(ui_Image3, LV_ALIGN_CENTER);

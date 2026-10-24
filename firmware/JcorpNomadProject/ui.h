@@ -30,7 +30,7 @@ extern lv_obj_t * ui____initial_actions0;
 // IMAGES AND IMAGE SETS
 LV_IMG_DECLARE(ui_img_1472434861);    // assets/icons8-micro-sd-48 (1).png
 LV_IMG_DECLARE(ui_img_512784668);    // assets/icons8-wifi-48 (1).png
-LV_IMG_DECLARE(ui_img_1859342711);    // assets/Logo (2).png
+LV_IMG_DECLARE(ui_img_1859342711);    // Khan-Nomad yurt logo (from SD_Card_Template/logo.svg)
 
 // FONTS
 LV_FONT_DECLARE(ui_font_Font1);
