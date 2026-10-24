@@ -8,6 +8,15 @@ Tracking the build of both devices in this fork.
 `ESP32-S3-LCD-1.47`). Ordered 2026-10-21. This is the board Nomad is designed
 for: built-in 1.47" screen, microSD slot and RGB LED, so no wiring is needed.
 
+### Software (done before the board arrives)
+
+- [x] Fake Nomad on the laptop to preview the interface ([tools/fake-nomad](../../tools/fake-nomad/README.md))
+- [x] Khan-Nomad name and steppe yurt logo, favicon and phone icon
+- [x] Steppe Night theme as the default (light and dark)
+- [x] Turkish interface with an EN/TR switch in the menu header
+- [x] Build tools set up (arduino-cli, ESP32 core 3.3.3, libraries), see [building-firmware.md](../building-firmware.md)
+- [x] Khan-Nomad firmware built: Khan-Nomad WiFi name, yurt on the LCD, Khan-Nomad on TVs
+
 ### Shopping
 
 - [x] Waveshare ESP32-S3-LCD-1.47 (USB-A)
@@ -15,7 +24,6 @@ for: built-in 1.47" screen, microSD slot and RGB LED, so no wiring is needed.
 
 ### Before the board arrives
 
-- [x] Fake Nomad on the laptop to preview the interface ([tools/fake-nomad](../../tools/fake-nomad/README.md))
 - [ ] Print the case: `NomadCasev30.stl` (the USB-A one, not `_USB-C`)
 - [ ] Convert movies to MP4 with the preset in `tools/handbrake`
 - [ ] Collect music (MP3), books (ePub/PDF), comics (CBZ)
@@ -24,10 +32,11 @@ for: built-in 1.47" screen, microSD slot and RGB LED, so no wiring is needed.
 
 ### When it arrives
 
-- [ ] Flash the **USB-A build** from <https://nomadflash.jcorptech.net> (Chrome or Edge)
-- [ ] Set up the SD card from the same site, copy media into the folders
+- [ ] Flash the **Khan-Nomad firmware**: `JcorpNomadProject.ino.merged.bin` at `0x0` (see [building-firmware.md](../building-firmware.md)). The original firmware on nomadflash.jcorptech.net is the fallback.
+- [ ] Copy this fork's `SD_Card_Template` onto the card, then copy media into the folders
 - [ ] Add the Wikipedia ZIM with Nomad Tools
-- [ ] Boot, connect to `Jcorp_Nomad` (default password `password`)
+- [ ] Boot: the screen shows the yurt and a `Khan-Nomad` WiFi network appears (default password `password`)
+- [ ] Open the menu, check the Steppe Night theme and the EN/TR switch
 - [ ] **Change the WiFi password** (8+ characters) and **set an admin password**
 - [ ] Gear icon, Library Index, **Full Scan Now**
 - [ ] Assemble into the printed case

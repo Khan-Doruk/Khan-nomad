@@ -23,14 +23,21 @@ Stream movies, music, books, and shows anywhere - no internet required.</p>
 
 ## In this fork: two-device build
 
-This fork ([Khan-Doruk/Khan-nomad](https://github.com/Khan-Doruk/Khan-nomad)) is building a two-device setup on top of the original Jcorp Nomad. Progress and the full checklist: [docs/ideas/build-plan.md](docs/ideas/build-plan.md)
+This fork ([Khan-Doruk/Khan-nomad](https://github.com/Khan-Doruk/Khan-nomad)) is **Khan-Nomad**: the original Jcorp Nomad rebranded, translated into Turkish, plus a planned Bluetooth music player. Progress and the full checklist: [docs/ideas/build-plan.md](docs/ideas/build-plan.md)
 
-| Device | Board | Status |
-|---|---|---|
-| **1. Main Nomad** | Official **Waveshare ESP32-S3-LCD-1.47** (USB-A, SKU 28317) | Board ordered, waiting for delivery |
-| **2. Bluetooth music player** | ESP32-WROOM-32 DevKit | Planned, parts not bought yet |
+**Status (updated 2026-10-24)**
 
-**1. Main Nomad**: the stock Nomad build on the official board. No wiring needed: flash the **USB-A build** from [nomadflash.jcorptech.net](https://nomadflash.jcorptech.net), set up the SD card, and print `NomadCasev30.stl` for the case.
+| Part | Status |
+|---|---|
+| **Main Nomad board**: Waveshare ESP32-S3-LCD-1.47 (USB-A, SKU 28317) | Ordered, waiting for delivery |
+| **Khan-Nomad firmware**: Khan-Nomad WiFi name, yurt logo on the screen | Built, not flashed yet (needs the board) |
+| **Khan-Nomad interface**: yurt logo, Steppe Night theme, Turkish with an EN/TR switch | Done |
+| **Fake Nomad**: run the interface on a laptop | Done |
+| **Bluetooth music player**: ESP32-WROOM-32 | Planned, parts not bought yet |
+
+**1. Main Nomad**: the official board, no wiring needed. Flash the Khan-Nomad firmware (see [docs/building-firmware.md](docs/building-firmware.md)), copy this fork's `SD_Card_Template` onto the SD card, and print `NomadCasev30.stl` for the case. Don't use the card setup on nomadflash.jcorptech.net: it copies the original interface, without the Khan-Nomad changes.
+
+**Khan-Nomad interface**: the steppe yurt logo, the Steppe Night theme (yurt teal and cream, terracotta in dark mode) as the default, and a Turkish version. Tap **EN** in the menu header to switch to **TR**.
 
 **2. Bluetooth music player**: an ESP32 (WROOM-32) that joins Nomad's WiFi, streams MP3s and plays them on Bluetooth headphones or a speaker, with physical buttons and an OLED. Full guide: [docs/ideas/bluetooth-music-player.md](docs/ideas/bluetooth-music-player.md)
 
