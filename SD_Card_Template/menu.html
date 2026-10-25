@@ -766,6 +766,71 @@
   .resume-remove:active {
     transform:scale(0.95);
   }
+
+  /* ===== Khan-Nomad home (design A1; dark mode = A3) ===== */
+  :root { --chip-watch-bg:#F5DCCF; --chip-watch:#C8553D; --chip-read-bg:#D9E4E8; --chip-read:#1B3A4B;
+          --chip-misc-bg:#EDE3D0; --chip-misc:#7A6F60; }
+  body.dark { --chip-watch-bg:#3A2A22; --chip-watch:#E9A06F; --chip-read-bg:#1F4A5E; --chip-read:#9FD3E0;
+              --chip-misc-bg:#24475A; --chip-misc:#C9D3D8; }
+  /* kilim band under the header, from the yurt's pattern */
+  header::after { content:""; position:absolute; left:0; right:0; bottom:-7px; height:7px; pointer-events:none;
+    background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='7'%3E%3Crect width='16' height='7' fill='%23C8553D'/%3E%3Cpath d='M8 .5l3 3-3 3-3-3z' fill='%23EBD9B4'/%3E%3Cpath d='M0 .5l3 3-3 3M16 .5l-3 3 3 3' fill='%231B3A4B'/%3E%3C/svg%3E") repeat-x; }
+  main { padding-top:20px; }
+  /* greeting */
+  .welcome-center { text-align:left; max-width:760px; position:relative; }
+  .welcome-center h1 { font-family:"Fraunces", Georgia, "Iowan Old Style", "Times New Roman", serif; font-weight:600;
+    font-size:1.75rem; letter-spacing:0; }
+  .welcome-center p { font-size:.92rem; margin-top:2px; }
+  body.dark .welcome-center::before, body.dark .welcome-center::after { content:""; position:absolute; border-radius:50%; background:#F4E9D4; }
+  body.dark .welcome-center::before { width:3px; height:3px; right:12px; top:4px; box-shadow:-34px 18px 0 -1px #F4E9D4, -16px 36px 0 -1px #F4E9D4; }
+  body.dark .welcome-center::after { width:2px; height:2px; right:70px; top:10px; opacity:.8; }
+  /* pill search */
+  .search-row { max-width:760px; margin:6px auto 4px; }
+  .search-input { border-radius:999px; border:1px solid var(--card-border); box-shadow:none; font-weight:500; padding:12px 18px; }
+  /* continue card */
+  .continue-card { width:100%; max-width:760px; box-sizing:border-box; display:flex; align-items:center; gap:12px;
+    background:#1B3A4B; color:#F4E9D4; border-radius:16px; padding:10px; cursor:pointer; border:1px solid transparent;
+    transition:transform .12s; text-align:left; font:inherit; }
+  .continue-card[hidden] { display:none; }
+  .continue-card:active { transform:scale(.99); }
+  body.dark .continue-card { background:var(--card); border-color:#D97B4A; }
+  .continue-card .cc-thumb { width:44px; height:62px; border-radius:6px; background:#6B2D1F; flex:none; overflow:hidden; }
+  .continue-card .cc-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+  .continue-card .cc-body { flex:1; min-width:0; }
+  .continue-card .cc-kicker { font-size:.75rem; opacity:.75; }
+  .continue-card .cc-title { font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .continue-card .cc-bar { height:4px; border-radius:2px; background:rgba(244,233,212,.18); margin-top:6px; overflow:hidden; }
+  .continue-card .cc-bar span { display:block; height:100%; background:#D97B4A; border-radius:2px; }
+  .continue-card .cc-play { width:36px; height:36px; border-radius:50%; background:#D97B4A; color:#fff; flex:none;
+    display:flex; align-items:center; justify-content:center; }
+  /* tiles: icon chip on top, label below, three per row everywhere */
+  .grid-wrap { border:none; background:none; padding:0; max-width:760px; }
+  .grid { gap:10px; margin-top:4px; }
+  .tile { flex-direction:column; gap:6px; padding:14px 6px 12px; border-radius:16px; border:1px solid var(--card-border);
+    font-weight:600; min-height:0; flex:0 0 calc(33.333% - 7px); max-width:none; transition:transform .15s, box-shadow .15s; }
+  .tile:hover { transform:translateY(-2px); box-shadow:0 6px 16px rgba(27,58,75,.10); }
+  .tile .label { font-size:.9rem; }
+  .tile .chip { width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    background:var(--chip-misc-bg); color:var(--chip-misc); }
+  .tile[data-group="watch"] .chip { background:var(--chip-watch-bg); color:var(--chip-watch); }
+  .tile[data-group="read"] .chip { background:var(--chip-read-bg); color:var(--chip-read); }
+  .tile .chip svg { width:24px; height:24px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+  @media (max-width:900px) { .tile { flex:0 0 calc(33.333% - 7px); max-width:none; } }
+  @media (max-width:480px) { .tile { flex:0 0 calc(33.333% - 7px); max-width:none; } .tile .label { font-size:.8rem; } .welcome-center h1 { font-size:1.5rem; } }
+  /* phone header: four compact buttons and the name back next to the logo */
+  @media (max-width:640px) {
+    .icon-btn, .admin-btn { width:40px; height:40px; padding:0; border-radius:12px; font-size:16px; }
+    .header-space { gap:6px; }
+    .brand .title { display:block !important; font-size:1rem; }
+    .grid { max-width:none; margin:4px 0 0; gap:8px; }
+    .tile { flex:0 0 calc(33.333% - 6px); }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .tile { animation:tileIn .35s ease both; }
+    .tile:nth-child(2){animation-delay:.03s} .tile:nth-child(3){animation-delay:.06s} .tile:nth-child(4){animation-delay:.09s}
+    .tile:nth-child(5){animation-delay:.12s} .tile:nth-child(6){animation-delay:.15s} .tile:nth-child(n+7){animation-delay:.18s}
+  }
+  @keyframes tileIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
 </style>
 <script src="/i18n.js"></script>
 </head>
@@ -797,8 +862,8 @@
 <main>
   <div class="content-area">
     <div class="welcome-center">
-      <h1>Khan-Nomad</h1>
-      <p>Your personal Media Library</p>
+      <h1 id="greeting">Welcome</h1>
+      <p id="greetingSub">Your personal Media Library</p>
     </div>
 
     <div class="search-row" style="position:relative; z-index:210;">
@@ -808,20 +873,22 @@
 
     <div id="resultsPanel" role="list" aria-label="Search results"></div>
 
+    <button type="button" id="continueCard" class="continue-card" hidden></button>
+
     <div class="grid-wrap" aria-hidden="false">
       <div class="grid" role="navigation" aria-label="Categories" id="tiles">
-        <a class="tile" href="/movies" data-bucket="Movies"><div class="label">Movies</div></a>
-        <a class="tile" href="/shows" data-bucket="Shows"><div class="label">Shows</div></a>
-        <a class="tile" href="/music" data-bucket="Music"><div class="label">Music</div></a>
-        <a class="tile" href="/books" data-bucket="Books"><div class="label">Books</div></a>
-        <a class="tile" href="/gallery" data-bucket="Gallery"><div class="label">Gallery</div></a>
-        <a class="tile" href="/files" data-bucket="Files"><div class="label">Files</div></a>
-        <a class="tile" href="/games" data-bucket="Games" style="display:none;"><div class="label">Games</div></a>
-        <a class="tile" href="/maps" data-bucket="Maps" style="display:none;"><div class="label">Maps</div></a>
-        <a class="tile" href="/archive" data-bucket="Archive" style="display:none;"><div class="label">Archive</div></a>
-        <a class="tile" href="/translate" data-bucket="Translate" style="display:none;"><div class="label">Translate</div></a>
-        <a class="tile" href="/cookbook" data-bucket="Cookbook" style="display:none;"><div class="label">Cookbook</div></a>
-        <a class="tile" href="/workshop" data-bucket="Workshop" style="display:none;"><div class="label">Workshop</div></a>
+        <a class="tile" href="/movies" data-bucket="Movies" data-group="watch"><span class="chip" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 4v16M16 4v16M4 8h4M4 16h4M4 12h16M16 8h4M16 16h4"/></svg></span><div class="label">Movies</div></a>
+        <a class="tile" href="/shows" data-bucket="Shows" data-group="watch"><span class="chip" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M16 3l-4 4-4-4"/></svg></span><div class="label">Shows</div></a>
+        <a class="tile" href="/music" data-bucket="Music" data-group="watch"><span class="chip" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="6" cy="17" r="3"/><circle cx="16" cy="15" r="3"/><path d="M9 17V4h10v11M9 8h10"/></svg></span><div class="label">Music</div></a>
+        <a class="tile" href="/books" data-bucket="Books" data-group="read"><span class="chip" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 19a9 9 0 0 1 9 0a9 9 0 0 1 9 0M3 6a9 9 0 0 1 9 0a9 9 0 0 1 9 0M3 6v13M12 6v13M21 6v13"/></svg></span><div class="label">Books</div></a>
+        <a class="tile" href="/gallery" data-bucket="Gallery" data-group="misc"><span class="chip" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M15 8h.01M3 16l5-5c.93-.9 2.07-.9 3 0l5 5M14 14l1-1c.93-.9 2.07-.9 3 0l3 3"/></svg></span><div class="label">Gallery</div></a>
+        <a class="tile" href="/files" data-bucket="Files" data-group="misc"><span class="chip" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 4h4l3 3h7a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2"/></svg></span><div class="label">Files</div></a>
+        <a class="tile" href="/games" data-bucket="Games" data-group="read" style="display:none;"><span class="chip" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="4"/><path d="M6 12h4M8 10v4M15 11v.01M18 13v.01"/></svg></span><div class="label">Games</div></a>
+        <a class="tile" href="/maps" data-bucket="Maps" data-group="misc" style="display:none;"><span class="chip" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 7l6-3 6 3 6-3v13l-6 3-6-3-6 3V7M9 4v13M15 7v13"/></svg></span><div class="label">Maps</div></a>
+        <a class="tile" href="/archive" data-bucket="Archive" data-group="read" style="display:none;"><span class="chip" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3.6 9h16.8M3.6 15h16.8M11.5 3a17 17 0 0 0 0 18M12.5 3a17 17 0 0 1 0 18"/></svg></span><div class="label">Archive</div></a>
+        <a class="tile" href="/translate" data-bucket="Translate" data-group="read" style="display:none;"><span class="chip" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 5h7M9 3v2c0 4.4-2.2 8-5 8M5 9c0 2.1 3 3.9 6.7 4M12 20l4-9 4 9M19.1 18h-6.2"/></svg></span><div class="label">Translate</div></a>
+        <a class="tile" href="/cookbook" data-bucket="Cookbook" data-group="misc" style="display:none;"><span class="chip" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3c1.9 0 3.5 1.35 3.9 3.15A4 4 0 0 1 18 13.87V20H6v-6.13a4 4 0 1 1 2.09-7.72A4 4 0 0 1 12 3zM6.2 17H18"/></svg></span><div class="label">Cookbook</div></a>
+        <a class="tile" href="/workshop" data-bucket="Workshop" data-group="misc" style="display:none;"><span class="chip" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 10h3V7L6.5 3.5a6 6 0 0 1 8 8l6 6a2 2 0 0 1-3 3l-6-6a6 6 0 0 1-8-8L7 10"/></svg></span><div class="label">Workshop</div></a>
       </div>
     </div>
   </div>
@@ -2251,6 +2318,60 @@ document.addEventListener('keydown', (e) => { if(e.key === 'Escape'){ resultsPan
 /* Chat lives on its own page (chat.html), served at the /chat short route. */
 document.getElementById('chatBtn').addEventListener('click', () => { location.href = '/chat'; });
 
+</script>
+<script>
+/* ===== Khan-Nomad home (design A1): greeting, people count, continue card ===== */
+(function(){
+  const h = new Date().getHours();
+  const greet = h < 5 ? 'Good night' : h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : h < 22 ? 'Good evening' : 'Good night';
+  const g = document.getElementById('greeting'); if (g) g.textContent = greet;
+  fetch('/admin-status', { cache:'no-store' }).then(r => r.ok ? r.json() : null).then(s => {
+    const n = s && +s.users;
+    const sub = document.getElementById('greetingSub');
+    if (sub && n > 0) sub.textContent = n === 1 ? '1 person around the yurt' : n + ' people around the yurt';
+  }).catch(() => {});
+})();
+
+function renderContinue(items){
+  const card = document.getElementById('continueCard');
+  if (!card) return;
+  const list = (items || []).map(it => ({
+    path: it.path || it.p || it.file || it.url || '',
+    title: it.title || it.name || (it.raw && (it.raw.title || it.raw.name)) || '',
+    position: +(it.position || (it.raw && (it.raw.position || it.raw.pos)) || 0),
+    duration: +(it.duration || (it.raw && (it.raw.duration || it.raw.dur)) || 0),
+    updated: +(it.updated || (it.raw && (it.raw.updated || it.raw.ts)) || 0),
+  })).filter(x => /\/(movies|shows|music|books)\//i.test(x.path)).sort((a, b) => b.updated - a.updated);
+  const it = list[0];
+  if (!it) { card.hidden = true; return; }
+  const p = it.path.toLowerCase();
+  const kind = p.includes('/music/') ? 'Continue listening' : p.includes('/books/') ? 'Continue reading' : 'Continue watching';
+  const title = friendlyDisplayName(it.title || it.path.split('/').pop());
+  const pct = it.duration > 0 ? Math.max(2, Math.min(100, Math.round(it.position / it.duration * 100))) : 0;
+  let thumb = '';
+  try { const prev = findPreviewForResumeItem({ path: it.path, title: it.title }); if (prev) thumb = '<img alt="" src="' + escapeHtml(prev) + '" onerror="this.remove()">'; } catch (e) {}
+  card.innerHTML = '<div class="cc-thumb">' + thumb + '</div><div class="cc-body"><div class="cc-kicker">' + kind +
+    '</div><div class="cc-title">' + escapeHtml(title) + '</div>' +
+    (pct ? '<div class="cc-bar"><span style="width:' + pct + '%"></span></div>'
+         : (it.position ? '<div class="cc-kicker">Left off at ' + escapeHtml(formatTimeSeconds(it.position)) + '</div>' : '')) +
+    '</div><span class="cc-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>';
+  card.setAttribute('aria-label', kind + ': ' + title);
+  card.onclick = () => {
+    const enc = encodeURIComponent(it.path);
+    if (p.includes('/movies/')) location.href = '/movies#play=' + enc;
+    else if (p.includes('/shows/')) location.href = '/shows#play=' + enc;
+    else if (p.includes('/music/')) location.href = '/music#play=' + enc;
+    else location.href = it.path.startsWith('/') ? it.path : '/' + it.path;
+  };
+  card.hidden = false;
+  // the old resume strip would only repeat this one item
+  if (list.length <= 1 && typeof resumePanel !== "undefined") resumePanel.style.display = "none";
+}
+// draw the continue card every time the resume list is drawn
+const _renderResumeOriginal = renderResume;
+renderResume = function(items){ _renderResumeOriginal(items); try { renderContinue(items); } catch (e) { console.warn('[home] continue card', e); } };
+// the first resume draw can run before this script loads, so draw the card once now too
+collectResumeItems().then(renderContinue).catch(() => {});
 </script>
 </body>
 </html>
