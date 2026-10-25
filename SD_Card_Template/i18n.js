@@ -23,6 +23,11 @@
     'Search everything on this card, wiki articles...': 'Bu karttaki her şeyde, wiki makalelerinde ara...',
     'Search': 'Ara', 'Search results': 'Arama sonuçları', 'Categories': 'Kategoriler',
     'Language': 'Dil',
+    'Welcome': 'Hoş geldin', 'Good morning': 'Günaydın', 'Good afternoon': 'İyi günler',
+    'Good evening': 'İyi akşamlar', 'Good night': 'İyi geceler',
+    '1 person around the yurt': 'Yurtta 1 kişi',
+    'Continue watching': 'İzlemeye devam et', 'Continue listening': 'Dinlemeye devam et',
+    'Continue reading': 'Okumaya devam et',
 
     // shared
     '← Back to Menu': '← Menüye dön', '← Back': '← Geri',
@@ -101,6 +106,11 @@
     [/^Page (\d+) of (\d+)$/, 'Sayfa $1 / $2'],
     [/^(\d+) items?$/, '$1 öğe'],
     [/^(\d+) results?$/, '$1 sonuç'],
+    [/^(\d+) people around the yurt$/, 'Yurtta $1 kişi'],
+    [/^Left off at (.+)$/, 'Kaldığın yer: $1'],
+    [/^Continue watching: (.+)$/, 'İzlemeye devam et: $1'],
+    [/^Continue listening: (.+)$/, 'Dinlemeye devam et: $1'],
+    [/^Continue reading: (.+)$/, 'Okumaya devam et: $1'],
   ];
 
   const ATTRS = ['placeholder', 'title', 'aria-label'];
