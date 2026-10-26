@@ -58,7 +58,7 @@ EXTRA_MIME = {
 
 DEFAULT_SETTINGS = {
     "rgbMode": "off", "rgbColor": "#ff0000", "adminPassword": "", "adminPasswordSet": False,
-    "wifiSSID": "Jcorp_Nomad", "wifiPassword": "password", "brightness": 100,
+    "wifiSSID": "Khan-Nomad", "wifiPassword": "password", "brightness": 100,
     "autoGenerateMedia": True, "flipScreen": False, "dlnaEnabled": True, "dnsCatchAll": False,
 }
 

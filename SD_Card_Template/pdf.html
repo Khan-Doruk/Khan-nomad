@@ -78,6 +78,7 @@
             display: flex;
             flex-direction: column;
             height: 100vh;
+            height: 100dvh;
             width: 100%;
         }
 
@@ -107,27 +108,6 @@
             gap: 6px;
             align-items: center;
             flex-wrap: wrap;
-        }
-
-        .reader-btn {
-            background: rgba(255,255,255,0.2);
-            border: none;
-            color: var(--header-text);
-            padding: 8px 12px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: background 0.2s ease;
-            white-space: nowrap;
-        }
-
-        .reader-btn:hover {
-            background: rgba(255,255,255,0.3);
-        }
-
-        .reader-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
         }
 
         .reader-main {
@@ -226,26 +206,6 @@
             flex-wrap: wrap;
         }
 
-        .nav-btn {
-            background: var(--primary);
-            color: #fff;
-            border: none;
-            padding: 8px 14px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.95em;
-            transition: background 0.2s ease;
-        }
-
-        .nav-btn:hover {
-            background: var(--primary-dark);
-        }
-
-        .nav-btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-
         .page-info {
             color: #333;
             font-weight: 600;
@@ -278,40 +238,152 @@
             font-size: 1rem;
         }
 
-        @media (max-width: 768px) {
-            .reader-header {
-                padding: 10px 12px;
-            }
-
-            .reader-title {
-                flex: 1 1 100%;
-                margin-bottom: 4px;
-            }
-
-            .reader-controls {
-                width: 100%;
-                justify-content: flex-start;
-            }
-
-            .reader-btn {
-                font-size: 0.85rem;
-                padding: 6px 10px;
-            }
-        }
     </style>
     <script src="theme-manager.js"></script>
     <script src="/nomad-utils.js"></script>
+<link rel="stylesheet" href="/khan-pages.css">
+<style id="khan-page">
+/* Khan-Nomad PDF reader: teal top bar with the kilim band, round zoom controls,
+   a quiet desk around the pages and a page-number pill in the bottom bar. */
+
+/* ---- top bar ---- */
+.reader-header {
+  position: relative;
+  z-index: 100;
+  flex-wrap: nowrap;
+  gap: 6px;
+  padding: 6px 10px 13px;          /* the last 7px is the kilim band */
+  background: var(--header-bg, var(--primary));
+  color: var(--kn-cream);
+  box-shadow: none;
+}
+body.dark .reader-header { background: var(--header-bg, var(--primary)); }  /* master.css paints it --primary (terracotta) in dark */
+.reader-header::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 7px;
+  pointer-events: none;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='7'%3E%3Crect width='16' height='7' fill='%23C8553D'/%3E%3Cpath d='M8 .5l3 3-3 3-3-3z' fill='%23EBD9B4'/%3E%3Cpath d='M0 .5l3 3-3 3M16 .5l-3 3 3 3' fill='%231B3A4B'/%3E%3C/svg%3E") repeat-x;
+}
+.reader-title,
+.reader-header .reader-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0 4px;
+  font-family: var(--kn-serif);
+  font-weight: 600;
+  font-size: 1.12rem;
+  line-height: 1.2;
+}
+.reader-controls,
+.reader-header .reader-controls { flex: none; width: auto; flex-wrap: nowrap; gap: 4px; }
+
+/* ---- round icon buttons and pills ---- */
+.kn-round, .kn-pill {
+  flex: none;
+  height: 40px;
+  border: none;
+  border-radius: 999px;
+  background: rgba(244, 233, 212, 0.14);
+  color: var(--kn-cream);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  text-decoration: none;
+  font: inherit;
+  -webkit-tap-highlight-color: transparent;
+  transition: background .15s ease, opacity .15s ease;
+}
+.kn-round { width: 40px; padding: 0; }
+.kn-pill { min-width: 62px; padding: 0 12px; font-size: .85rem; font-weight: 600; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.kn-round:hover, .kn-pill:hover { background: rgba(244, 233, 212, 0.24); }
+.kn-round:focus-visible, .kn-pill:focus-visible { outline: 2px solid var(--kn-cream); outline-offset: 2px; }
+.kn-round svg { width: 20px; height: 20px; flex: none; }
+.kn-round:disabled { opacity: .4; cursor: default; }
+
+/* ---- the desk around the pages ---- */
+#pdf-container { background: var(--kn-sand); padding: 18px 0; gap: 14px; }
+body.dark #pdf-container { background: #0B1A25; }
+.pdf-page { max-width: none; border-radius: 2px; box-shadow: 0 1px 2px rgba(27,58,75,.18), 0 8px 22px -6px rgba(27,58,75,.35); }
+body.dark .pdf-page { box-shadow: 0 1px 2px rgba(0,0,0,.4), 0 10px 26px -6px rgba(0,0,0,.7); }
+.loading-overlay { background: rgba(237, 227, 208, 0.96); }
+body.dark .loading-overlay { background: rgba(11, 26, 37, 0.96); }
+.spinner { width: 44px; height: 44px; border-color: var(--kn-terracotta-soft); border-top-color: var(--kn-terracotta); }
+.loading-text { color: var(--muted); }
+.loading-bar { background: var(--kn-terracotta-soft); }
+.loading-bar-fill { background: var(--kn-terracotta); }
+
+/* ---- bottom bar: prev, page pill, next, jump ---- */
+.reader-navigation,
+body.dark .reader-navigation {
+  flex: none;
+  gap: 10px;
+  padding: 8px 12px;
+  background: var(--card-bg);
+  border-top: 1px solid var(--kn-line);
+}
+.reader-navigation .kn-round { background: var(--kn-teal-soft); color: var(--kn-teal); }
+.reader-navigation .kn-round:hover { background: var(--kn-sand); }
+.reader-navigation .kn-round:focus-visible { outline-color: var(--kn-terracotta); }
+body.dark .reader-navigation .kn-round { background: rgba(244, 233, 212, 0.10); color: var(--kn-cream); }
+body.dark .reader-navigation .kn-round:hover { background: rgba(244, 233, 212, 0.18); }
+.page-info,
+body.dark .page-info {
+  min-width: 86px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: var(--kn-sand);
+  color: var(--text);
+  font-size: .9rem;
+  font-weight: 600;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.page-jump { gap: 4px; margin-left: 6px; }
+.page-jump input {
+  width: 76px;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--kn-line);
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: .9rem;
+  text-align: center;
+  -moz-appearance: textfield;
+}
+.page-jump input::-webkit-outer-spin-button,
+.page-jump input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.page-jump input:focus { outline: none; border-color: var(--kn-terracotta); }
+.page-jump input::placeholder { color: var(--muted); }
+@media (max-width: 400px) {
+  .reader-navigation { gap: 6px; padding: 8px; }
+  .page-info { min-width: 76px; padding: 6px 10px; }
+  .page-jump { margin-left: 2px; }
+  .page-jump input { width: 64px; padding: 0 8px; }
+}
+</style>
 <script src="/i18n.js"></script>
 </head>
 <body>
     <div class="reader-container">
         <div class="reader-header">
+            <a class="kn-round" href="/books" title="Back to Books" aria-label="Back to Books">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>
+            </a>
             <div class="reader-title" id="readerTitle">Loading...</div>
             <div class="reader-controls">
-                <a class="reader-btn" href="/books" title="Back to Books">← Back</a>
-                <button class="reader-btn" id="zoomOut" title="Zoom Out">-</button>
-                <button class="reader-btn" id="zoomReset" title="Reset Zoom">100%</button>
-                <button class="reader-btn" id="zoomIn" title="Zoom In">+</button>
+                <button class="kn-round" id="zoomOut" title="Zoom out" aria-label="Zoom out">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14"/></svg>
+                </button>
+                <button class="kn-pill" id="zoomReset" title="Reset Zoom">100%</button>
+                <button class="kn-round" id="zoomIn" title="Zoom in" aria-label="Zoom in">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+                </button>
             </div>
         </div>
         <div class="reader-main">
@@ -323,15 +395,21 @@
                 </div>
             </div>
         </div>
-        <div class="reader-navigation">
-            <button class="nav-btn" id="prevBtn">← Previous</button>
-            <span class="page-info" id="pageInfo">Page 0 / 0</span>
-            <button class="nav-btn" id="nextBtn">Next →</button>
+        <nav class="reader-navigation">
+            <button class="kn-round" id="prevBtn" title="Previous" aria-label="Previous">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <span class="page-info" id="pageInfo">0 / 0</span>
+            <button class="kn-round" id="nextBtn" title="Next" aria-label="Next">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
             <div class="page-jump">
-                <input type="number" id="pageInput" min="1" placeholder="Go to...">
-                <button class="nav-btn" id="jumpBtn">Go</button>
+                <input type="number" id="pageInput" min="1" inputmode="numeric" placeholder="Go to..." aria-label="Go to page">
+                <button class="kn-round" id="jumpBtn" title="Go to page" aria-label="Go to page">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                </button>
             </div>
-        </div>
+        </nav>
     </div>
 
     <script>
@@ -398,7 +476,7 @@
         }
 
         function updatePageInfo() {
-            pageInfo.textContent = `Page ${currentPage} / ${totalPages}`;
+            pageInfo.textContent = `${currentPage} / ${totalPages}`;
             pageInput.max = totalPages;
             prevBtn.disabled = currentPage <= 1;
             nextBtn.disabled = currentPage >= totalPages;
@@ -644,6 +722,8 @@
         zoomResetBtn.addEventListener('click', () => changeZoom(1.5));
 
         document.addEventListener('keydown', (e) => {
+            // typing a page number (or "-") in the jump box shouldn't turn or zoom the page
+            if (e.target && e.target.tagName === 'INPUT') return;
             if (e.key === 'ArrowRight' || e.key === ' ') {
                 e.preventDefault();
                 goToPage(currentPage + 1);

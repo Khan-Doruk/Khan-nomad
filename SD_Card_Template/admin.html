@@ -8,37 +8,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Panel</title>
   <style>
-    :root {
-      --primary: #007bff;
-      --primary-dark: #0056b3;
-      --success: #28a745;
-      --warning: #ffc107;
-      --danger: #dc3545;
-      --info: #17a2b8;
-      --secondary: #6c757d;
-      
-      /* Light theme */
-      --bg: #f8f9fa;
-      --text: #212529;
-      --muted: #6c757d;
-      --card-bg: #ffffff;
-      --card-border: #dee2e6;
-      --header-text: #ffffff;
-      --shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-      --shadow-large: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-    }
-
-    /* Dark theme */
-    body.dark {
-      --bg: #121212;
-      --text: #e9ecef;
-      --muted: #adb5bd;
-      --card-bg: #1e1e1e;
-      --card-border: #343a40;
-      --header-text: #ffffff;
-      --shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.3);
-      --shadow-large: 0 0.5rem 1rem rgba(0, 0, 0, 0.4);
-    }
+    /* colors come from master.css (Steppe Night, light and body.dark) and the theme
+       manager; this page used to pin its own bootstrap-blue palette here */
 
     * {
       box-sizing: border-box;
@@ -701,6 +672,205 @@
     }
   </style>
   <script src="theme-manager.js"></script>
+<link rel="stylesheet" href="/khan-pages.css">
+<style id="khan-page">
+/* Khan-Nomad admin panel: pill action bar, small status cards, rounded setting
+   cards with serif titles, terracotta primary buttons, bottom-sheet popups.
+   Sits after khan-pages.css so it wins on equal specificity. */
+body { --kn-teal-ink: #1B3A4B; --kn-ok: #5E8C61; --kn-warn: #C98A1E; }
+body.dark { --kn-teal-ink: #9CC3D2; --kn-ok: #8DBB8F; --kn-warn: #E3B04B; }
+body { accent-color: var(--kn-terracotta); }
+
+/* ---- header (shared look from khan-pages.css) ---- */
+body > header.header { padding: 0 20px; box-shadow: none; justify-content: flex-start; }
+body > header.header h1 { font-size: 1.35rem; }
+@media (max-width: 768px) { body > header.header { padding: 0 14px; } }
+/* master.css stacks the header into a column on phones; keep back button + title on one row */
+@media (max-width: 600px) { body > header.header { flex-direction: row; align-items: center; gap: 10px; } }
+
+/* ---- action bar: pills on the left, status cards on the right ---- */
+.action-bar {
+  background: var(--bg); border-bottom: 1px solid var(--kn-line); box-shadow: none;
+  padding: calc(14px + 7px) 20px 14px; gap: 12px 20px;
+}
+.action-buttons { gap: 8px; }
+.action-buttons .btn {
+  width: auto; min-height: 38px; padding: 0 16px 0 12px; gap: 7px;
+  border-radius: 999px; background: transparent; border: 1.5px solid currentColor;
+  font-weight: 600; font-size: .875rem; box-shadow: none;
+}
+.action-buttons .btn svg { flex: none; display: block; }
+.action-buttons .btn:hover { transform: none; box-shadow: none; }
+#btn-restart, #btn-shutdown { color: var(--kn-terracotta); }
+#btn-restart:hover, #btn-shutdown:hover { background: var(--kn-terracotta-soft); }
+#btn-usbmode, #btn-flashmode, #btn-wifimode { color: var(--kn-teal-ink); }
+#btn-usbmode:hover, #btn-flashmode:hover, #btn-wifimode:hover { background: var(--kn-teal-soft); }
+/* temperature: a quiet chip, the thermometer takes the state color */
+#cpu-temp, #cpu-temp.btn-success, #cpu-temp.btn-warning, #cpu-temp.btn-danger, #cpu-temp.btn-secondary {
+  padding: 0 14px 0 10px; border: 1px solid var(--kn-line);
+  background: var(--kn-sand); color: var(--text);
+  font-variant-numeric: tabular-nums; --kn-temp: var(--muted);
+}
+#cpu-temp.btn-success { --kn-temp: var(--kn-ok); }
+#cpu-temp.btn-warning { --kn-temp: var(--kn-warn); }
+#cpu-temp.btn-danger  { --kn-temp: var(--kn-terracotta); }
+#cpu-temp::before {
+  content: ""; flex: none; width: 16px; height: 16px; background: var(--kn-temp);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='M14 14.8V5a2 2 0 0 0-4 0v9.8a4 4 0 1 0 4 0z'/%3E%3C/svg%3E") center / contain no-repeat;
+          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='M14 14.8V5a2 2 0 0 0-4 0v9.8a4 4 0 1 0 4 0z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+#cpu-temp:hover { background: var(--kn-sand); filter: brightness(.97); }
+
+/* SSID / password / users as small cards */
+.device-info { display: grid; grid-template-columns: repeat(3, minmax(96px, auto)); gap: 8px; }
+.info-badge {
+  min-width: 0; padding: 8px 12px; border-radius: 12px;
+  border: 1px solid var(--kn-line); background: var(--card-bg); box-shadow: none;
+}
+.info-badge .label { font-size: .68rem; letter-spacing: .06em; font-weight: 600; }
+.info-badge .value { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .92rem; }
+@media (max-width: 768px) {
+  .action-bar { padding: calc(12px + 7px) 14px 12px; }
+  .action-buttons { justify-content: flex-start; }
+  .device-info { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 480px) {
+  .action-buttons { flex-direction: row; flex-wrap: wrap; }
+  .action-buttons .btn { width: auto; flex: 1 1 auto; }
+  .device-info { flex-direction: row; }
+  .info-badge { text-align: left; }
+}
+
+/* ---- setting cards ---- */
+.container { padding: 20px; }
+@media (max-width: 768px) { .container { padding: 14px 12px 24px; } }
+.grid { gap: 16px; margin-bottom: 16px; }
+.grid-full { gap: 16px; }
+.card {
+  border-radius: 16px; border: 1px solid var(--kn-line);
+  background: var(--card-bg); box-shadow: none; padding: 18px 18px 20px;
+}
+.card:hover { transform: none; box-shadow: none; }
+.card h2 {
+  font-family: var(--kn-serif); font-weight: 600; font-size: 1.2rem; line-height: 1.25;
+  color: var(--text); margin-bottom: 14px;
+}
+@media (max-width: 768px) { .card { padding: 16px 14px 18px; } }
+
+/* ---- buttons inside the cards ---- */
+.btn {
+  min-height: 42px; padding: 0 18px; border-radius: 12px;
+  font-weight: 600; border: 1.5px solid transparent; box-shadow: none;
+  transition: filter .15s ease, background-color .15s ease;
+}
+.btn:hover { transform: none; box-shadow: none; filter: brightness(.96); }
+.btn:hover:not(:disabled), .btn:active:not(:disabled) { transform: none; box-shadow: none; }
+.btn-primary:hover:not(:disabled) { background: var(--kn-terracotta); }
+.btn:focus-visible { outline: 2px solid var(--kn-terracotta); outline-offset: 2px; }
+.btn:disabled { opacity: .5; cursor: not-allowed; filter: none; }
+.btn-primary { background: var(--kn-terracotta); border-color: var(--kn-terracotta); color: #fff; }
+body.dark .btn-primary { color: #24140C; }
+.btn-secondary { background: transparent; border-color: var(--kn-line); color: var(--text); }
+.btn-secondary:hover { background: var(--kn-sand); filter: none; }
+.btn-warning { background: transparent; border-color: var(--kn-terracotta); color: var(--kn-terracotta); }
+.btn-warning:hover { background: var(--kn-terracotta-soft); filter: none; }
+.btn-success, .btn-info { background: var(--kn-teal); border-color: var(--kn-teal); color: var(--kn-cream); }
+.btn-danger { background: transparent; border-color: var(--kn-terracotta); color: var(--kn-terracotta); }
+
+/* ---- form controls ---- */
+.form-label { font-size: .85rem; }
+.form-control {
+  border-radius: 12px; border: 1px solid var(--kn-line);
+  background: var(--bg); color: var(--text);
+  padding: .7rem .9rem; font-size: .92rem;
+}
+.form-control:focus { border-color: var(--kn-terracotta); box-shadow: 0 0 0 3px var(--kn-terracotta-soft); }
+input[type="range"]#brightness { height: 6px; border-radius: 999px; background: var(--kn-line); }
+#brightness::-webkit-slider-runnable-track { height: 6px; border-radius: 999px; }
+#brightness::-webkit-slider-thumb { margin-top: -7px; width: 20px; height: 20px; background: var(--kn-terracotta); border: 3px solid var(--card-bg); box-shadow: 0 1px 4px rgba(0,0,0,.25); }
+#brightness::-moz-range-track { height: 6px; border-radius: 999px; }
+#brightness::-moz-range-thumb { width: 16px; height: 16px; background: var(--kn-terracotta); border: 3px solid var(--card-bg); }
+#brightness-percent, #sd-percent { font-family: var(--kn-serif); }
+
+/* toggles: same switch, warmer colors, a little smaller */
+.toggle-switch { flex: none; width: 50px; height: 30px; }
+.slider { background-color: var(--kn-line); transition: background-color .2s; }
+body:not(.dark) .slider { background-color: #D8CCB6; }
+.slider:before { width: 24px; height: 24px; left: 3px; bottom: 3px; box-shadow: 0 1px 3px rgba(0,0,0,.25); transition: transform .2s; }
+input:checked + .slider { background-color: var(--kn-terracotta); }
+input:checked + .slider:before { transform: translateX(20px); }
+.toggle-switch input:focus-visible + .slider { outline: 2px solid var(--kn-terracotta); outline-offset: 2px; }
+#ui-pages > div + div { border-top: 1px solid var(--kn-line); padding-top: .5rem; }
+
+/* ---- usage bars: SD card and library index ---- */
+.progress { height: 8px; border-radius: 999px; background: var(--kn-line); }
+.progress-bar { background: var(--kn-terracotta); border-radius: 999px; }
+#sd-percent { font-size: 1.7rem !important; }
+#sd-used, #sd-total { font-size: .9rem; color: var(--muted); }
+
+/* ---- RGB: a segmented pill, the active mode filled ---- */
+.rgb-buttons { display: inline-flex; flex-wrap: nowrap; gap: 4px; padding: 4px; border: 1px solid var(--kn-line); border-radius: 999px; background: var(--bg); }
+.rgb-buttons .btn, .rgb-buttons .btn-primary, .rgb-buttons .btn-success, .rgb-buttons .btn-secondary {
+  width: auto; min-height: 36px; padding: 0 16px; border-radius: 999px;
+  border: 0; background: transparent; color: var(--text);
+}
+.rgb-buttons .btn[aria-pressed="true"] { background: var(--kn-terracotta); color: #fff; }
+body.dark .rgb-buttons .btn[aria-pressed="true"] { color: #24140C; }
+.color-picker { width: 104px; height: 104px; box-shadow: 0 0 0 4px var(--card-bg), 0 0 0 5px var(--kn-line); }
+
+/* ---- library numbers ---- */
+.kn-stat { padding: .6rem .4rem; border-radius: 12px; border: 1px solid var(--kn-line); background: var(--bg); text-align: center; }
+.kn-stat-v { font-family: var(--kn-serif); font-weight: 600; font-size: 1.15rem; line-height: 1.2; }
+.kn-stat-l { font-size: .72rem; color: var(--muted); }
+.card details > summary { padding: 8px 0; color: var(--text) !important; }
+#sd-breakdown-table tr { border-bottom-color: var(--kn-line) !important; }
+
+/* ---- console ---- */
+.status-item { border-radius: 12px; border: 1px solid var(--kn-line); background: var(--bg); padding: .8rem; }
+.status-label { font-size: .68rem; letter-spacing: .06em; font-weight: 600; }
+.status-value { font-family: var(--kn-serif); }
+.console {
+  background: #0F2230; color: #D9E4E8; border-radius: 12px;
+  border: 1px solid #24475A; padding: 12px 14px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .8rem;
+}
+
+/* ---- theme picker and file browser frames ---- */
+.kn-frame { border: 1px solid var(--kn-line); border-radius: 12px; overflow: hidden; background: var(--card-bg); }
+.file-browser { border: 1px solid var(--kn-line); border-radius: 12px; }
+.file-browser-disclaimer { background: var(--kn-terracotta-soft); border: 0; border-radius: 12px; padding: 10px 14px; }
+.file-browser-disclaimer strong { color: var(--kn-terracotta); }
+
+/* ---- login and WiFi Mode as bottom sheets ---- */
+.auth-overlay { align-items: flex-end; justify-content: center; background: rgba(15,34,48,.48); animation: knFade .2s ease both; }
+.auth-modal {
+  position: relative; width: 100%; max-width: 520px; margin: 0;
+  border-radius: 18px 18px 0 0; padding: 22px 20px calc(18px + env(safe-area-inset-bottom, 0px));
+  background: var(--card-bg); color: var(--text);
+  box-shadow: 0 -10px 30px rgba(0,0,0,.18);
+  animation: knSheetUp .28s cubic-bezier(.2,.9,.2,1) both;
+}
+.auth-modal h3 { font-family: var(--kn-serif); font-weight: 600; font-size: 1.3rem; margin-bottom: 1rem; }
+.auth-modal .btn { min-height: 46px; }
+.wifi-modal { max-width: 520px; max-height: 90vh; padding-top: 6px; }
+.wifi-modal h3 { text-align: left; }
+.kn-handle { display: block; width: 64px; height: 22px; margin: 0 auto 2px; padding: 0; border: 0; background: transparent; cursor: pointer; }
+.kn-handle::before { content: ""; display: block; width: 36px; height: 4px; margin: 0 auto; border-radius: 2px; background: var(--kn-line); }
+.kn-handle:focus-visible { outline: 2px solid var(--kn-terracotta); outline-offset: 2px; border-radius: 6px; }
+.wifi-status { border-radius: 12px; border: 1px solid var(--kn-line); background: var(--bg); }
+.wifi-status.online .dot { background: var(--kn-ok); }
+.wifi-status.warn .dot { background: var(--kn-warn); }
+.wifi-scan-list { border: 1px solid var(--kn-line); border-radius: 12px; }
+.wifi-net-row { border-bottom-color: var(--kn-line); padding: .65rem .9rem; }
+.wifi-net-row:hover { background: var(--kn-terracotta-soft); }
+.wifi-actions .btn { min-height: 46px; }
+@keyframes knSheetUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+@keyframes knFade { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .auth-overlay, .auth-modal { animation: none; }
+  .slider, .slider:before, .btn { transition: none; }
+}
+</style>
 <script src="/i18n.js"></script>
 </head>
 <body>
@@ -718,8 +888,9 @@
 
   <!-- WiFi Mode popup -->
   <div id="wifi-overlay" class="auth-overlay hidden">
-    <div class="auth-modal wifi-modal">
-      <h3>WiFi Mode</h3>
+    <div class="auth-modal wifi-modal" role="dialog" aria-modal="true" aria-labelledby="wifi-title">
+      <button type="button" class="kn-handle" aria-label="Close" onclick="closeWifiModal()"></button>
+      <h3 id="wifi-title">WiFi Mode</h3>
       <div id="wifi-status" class="wifi-status"><span class="dot"></span><span id="wifi-status-text">Loading…</span></div>
 
       <div class="form-group">
@@ -765,18 +936,18 @@
   <!-- Header -->
   <header class="header">
     <h1>Admin Panel</h1>
-    <a href="/menu" class="menu-button">← Back</a>
+    <a href="/menu" class="back-btn">← Back to Menu</a>
   </header>
 
   <!-- Action Bar -->
   <div class="action-bar">
     <div class="action-buttons">
-      <button id="btn-restart" class="btn btn-success">Restart</button>
-      <button id="btn-shutdown" class="btn btn-danger">Shutdown</button>
-      <button id="btn-usbmode" class="btn btn-warning">USB Mode</button>
-      <button id="btn-flashmode" class="btn btn-info">Flash Mode</button>
-      <button id="btn-wifimode" class="btn btn-primary">WiFi Mode</button>
-      <button id="cpu-temp" class="btn btn-secondary">🌡️ --°C</button>
+      <button id="btn-restart" class="btn btn-success"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg>Restart</button>
+      <button id="btn-shutdown" class="btn btn-danger"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v8"/><path d="M6.6 6.6a8 8 0 1 0 10.8 0"/></svg>Shutdown</button>
+      <button id="btn-usbmode" class="btn btn-warning"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v15"/><path d="M9 5l3-3 3 3"/><path d="M12 13l-4-2V8"/><path d="M12 15l4-2v-2"/><circle cx="12" cy="19.5" r="2"/><rect x="6.5" y="6.5" width="3" height="2" rx=".5"/><circle cx="16" cy="10" r="1.2"/></svg>USB Mode</button>
+      <button id="btn-flashmode" class="btn btn-info"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>Flash Mode</button>
+      <button id="btn-wifimode" class="btn btn-primary"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 8.5a15 15 0 0 1 20 0"/><path d="M5.5 12.2a10 10 0 0 1 13 0"/><path d="M9 15.8a5 5 0 0 1 6 0"/><circle cx="12" cy="19.2" r=".8" fill="currentColor"/></svg>WiFi Mode</button>
+      <button id="cpu-temp" class="btn btn-secondary" title="CPU temperature, tap to switch °C / °F">--°C</button>
     </div>
 
     <div class="device-info">
@@ -824,9 +995,9 @@
         <h2>RGB Settings</h2>
         <div class="rgb-controls">
           <div class="rgb-buttons">
-            <button id="mode-off" class="btn btn-secondary">Off</button>
-            <button id="mode-solid" class="btn btn-primary">Solid</button>
-            <button id="mode-rainbow" class="btn btn-success">Rainbow</button>
+            <button id="mode-off" class="btn btn-secondary" aria-pressed="false">Off</button>
+            <button id="mode-solid" class="btn btn-primary" aria-pressed="false">Solid</button>
+            <button id="mode-rainbow" class="btn btn-success" aria-pressed="false">Rainbow</button>
           </div>
           <input type="color" id="led-color" class="color-picker" value="#ff0000">
         </div>
@@ -1006,7 +1177,6 @@
     <div class="grid-full">
       <!-- Console -->
       <div class="card console-section">
-      <div class="card">
         <h2>System Console</h2>
         <div class="status-grid" style="margin-bottom: 1rem;">
           <div class="status-item">
@@ -1036,8 +1206,8 @@
         <p style="color: var(--muted); font-size: 0.875rem; margin-bottom: 1rem;">
           Customize your media server's appearance with pre-designed themes or create your own color scheme.
         </p>
-        <div style="border: 1px solid var(--card-border); border-radius: 0.5rem; overflow: hidden;">
-          <iframe src="/theme-customization-ui.html" style="width: 100%; height: 800px; border: none; display: block;"></iframe>
+        <div class="kn-frame">
+          <iframe src="/theme-customization-ui.html" title="Theme Customization" style="width: 100%; height: 800px; border: none; display: block;"></iframe>
         </div>
       </div>
 
@@ -1059,7 +1229,7 @@
   </div>
 
   <!-- version query busts the firmware's max-age file caching (bump when admin.js changes) -->
-  <script src="admin.js?v=47"></script>
+  <script src="admin.js?v=48"></script>
 </body>
 </html>
 

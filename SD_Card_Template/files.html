@@ -138,6 +138,51 @@
     }
     body.dark .back-btn { background: rgba(255,255,255,0.12); color: var(--header-text); }
   </style>
+<link rel="stylesheet" href="/khan-pages.css">
+<style id="khan-page">
+  /* ---- Khan-Nomad files: pill toolbar, rows with a round type chip ---- */
+  .toolbar{gap:8px;top:var(--header-height);border-bottom:1px solid var(--kn-line);justify-content:flex-start}
+  .toolbar select{height:38px;padding:0 .9rem;min-width:0;background:var(--card-bg);font-weight:600;cursor:pointer}
+  .toolbar input[type="search"]{height:38px}
+  .toolbar select:focus-visible, .toolbar input[type="search"]:focus-visible{outline:2px solid var(--kn-terracotta);outline-offset:2px}
+  /* upload: terracotta pill (still hidden until NomadUI says uploads are allowed) */
+  .toolbar #uploadBtn.kn-upload{order:5;height:38px;min-height:0;padding:0 16px 0 12px;gap:6px;border-radius:999px;border:1px solid var(--kn-terracotta);background:var(--kn-terracotta);color:#fff;font-size:.88rem;font-weight:700;box-shadow:none;display:inline-flex;align-items:center}
+  .toolbar #uploadBtn.kn-upload:hover:not(:disabled){filter:brightness(.95);transform:none;box-shadow:none}
+  .toolbar #uploadBtn.kn-upload:focus-visible{outline:2px solid var(--kn-terracotta);outline-offset:2px}
+  body.dark .toolbar #uploadBtn.kn-upload{color:#24140C}
+  @media (max-width:600px){
+    /* search on its own row, filter, sort and upload share the next one */
+    .toolbar{flex-direction:row;flex-wrap:wrap;align-items:center}
+    .toolbar input[type="search"]{flex:1 1 100% !important;width:auto}
+    .toolbar select{flex:1 1 0;width:auto;min-width:0}
+    .toolbar #uploadBtn.kn-upload{flex:none}
+  }
+
+  main{padding:14px 12px 28px}
+  ul.file-list li, body.dark ul.file-list li{position:relative;margin-bottom:8px;padding:10px 14px 10px 10px;gap:12px;background:var(--card-bg);border:1px solid var(--kn-line);border-radius:14px;box-shadow:none;justify-content:flex-start;transition:border-color .15s ease, background-color .15s ease}
+  ul.file-list li.kn-file{flex-direction:row;align-items:center}
+  ul.file-list li.kn-file:hover{border-color:var(--kn-terracotta)}
+  ul.file-list li.kn-file:focus-within{box-shadow:0 0 0 2px var(--kn-terracotta)}
+  ul.file-list li.kn-file a{outline:none}
+  /* the name link covers the whole row, so a tap anywhere downloads */
+  ul.file-list li.kn-file a::after{content:"";position:absolute;inset:0;border-radius:14px}
+  /* loading, empty and error lines: plain muted text, no card */
+  ul.file-list li:not(.kn-file), body.dark ul.file-list li:not(.kn-file){background:transparent;border:0;justify-content:center;text-align:center;color:var(--muted);padding:40px 16px}
+
+  .kn-ico{flex:none;width:40px;height:40px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:var(--kn-sand);color:#8A6A3A}
+  .kn-ico[data-kind="media"]{background:var(--kn-terracotta-soft);color:var(--kn-terracotta)}
+  .kn-ico[data-kind="doc"]{background:var(--kn-teal-soft);color:var(--kn-teal)}
+  body.dark .kn-ico{color:var(--kn-cream)}
+  body.dark .kn-ico[data-kind="media"]{color:var(--kn-terracotta)}
+  .kn-file-text{flex:1;min-width:0}
+  ul.file-list li.kn-file .kn-file-text a{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;max-width:none;white-space:normal;overflow:hidden;overflow-wrap:anywhere;word-break:normal;color:var(--text);font-weight:600;font-size:.95rem;line-height:1.3}
+  ul.file-list li.kn-file .file-info{min-width:0;width:auto;margin-top:2px;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.8rem;color:var(--muted)}
+  .kn-dl{flex:none;width:34px;height:34px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--kn-line);color:var(--muted);transition:color .15s ease, border-color .15s ease}
+  ul.file-list li.kn-file:hover .kn-dl{color:var(--kn-terracotta);border-color:var(--kn-terracotta)}
+  @media (prefers-reduced-motion: reduce){
+    ul.file-list li{animation:none;opacity:1;transform:none;transition:none}
+  }
+</style>
 <script src="/i18n.js"></script>
 </head>
 <body data-page="files">
@@ -348,6 +393,99 @@ uploadInput.addEventListener('change', (e) => {
 });
 /* admin toggle: the button only appears when uploads are allowed */
 NomadUI.config().then(c => { if(!c.uploadsDisabled) uploadBtn.style.display = ''; });
+</script>
+
+<script>
+/* Khan-Nomad files page: each row gets a round type chip (terracotta video/audio, teal
+   documents, sand archives and the rest), the name over a muted "size • TYPE" line, and
+   a download mark. Hooks renderFiles instead of rewriting it. */
+(function(){
+  const svg = (paths, size) => '<svg width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' + paths + '</svg>';
+  const ICONS = {
+    video:   '<rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M10 9.5v5l4.5-2.5z"/>',
+    audio:   '<path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/>',
+    doc:     '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/>',
+    archive: '<rect x="3" y="4" width="18" height="5" rx="1.5"/><path d="M5 9v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9M10 13h4"/>',
+    image:   '<rect x="3" y="3" width="18" height="18" rx="2.5"/><circle cx="9" cy="9" r="1.8"/><path d="M21 15l-5-5L5 21"/>',
+    file:    '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/>'
+  };
+  const ICON_DL = '<path d="M12 4v11M7 10l5 5 5-5M5 20h14"/>';
+  const VIDEO = /^(mp4|mkv|avi|mov|webm|m4v|mpg|mpeg|ts|m2ts|wmv|flv|3gp)$/;
+  const AUDIO = /^(mp3|flac|wav|m4a|m4b|aac|ogg|oga|opus|wma|aiff?)$/;
+  const DOC   = /^(pdf|txt|md|rtf|doc|docx|odt|xls|xlsx|ods|csv|ppt|pptx|odp|epub|mobi|azw3|cbz|cbr|html?|json|xml)$/;
+  const ARCH  = /^(zip|7z|rar|tar|gz|tgz|bz2|xz|iso|dmg|exe|msi|apk|deb|bin|img)$/;
+  const IMAGE = /^(jpe?g|png|gif|webp|avif|bmp|svg|heic|tiff?)$/;
+
+  function kindOf(ext){
+    ext = String(ext || '').toLowerCase();
+    if (VIDEO.test(ext)) return { kind: 'media', icon: 'video' };
+    if (AUDIO.test(ext)) return { kind: 'media', icon: 'audio' };
+    if (DOC.test(ext))   return { kind: 'doc',   icon: 'doc' };
+    if (ARCH.test(ext))  return { kind: 'other', icon: 'archive' };
+    if (IMAGE.test(ext)) return { kind: 'other', icon: 'image' };
+    return { kind: 'other', icon: 'file' };
+  }
+
+  function decorate(){
+    const list = document.getElementById('fileList');
+    if (!list) return;
+    list.querySelectorAll(':scope > li').forEach(li => {
+      const a = li.querySelector(':scope > a');
+      if (!a || li.classList.contains('kn-file')) return;   // loading / empty lines stay plain
+      const name = a.getAttribute('download') || a.textContent || '';
+      const k = kindOf(extFromName(name));
+      li.classList.add('kn-file');
+
+      const chip = document.createElement('span');
+      chip.className = 'kn-ico';
+      chip.dataset.kind = k.kind;
+      chip.setAttribute('aria-hidden', 'true');
+      chip.innerHTML = svg(ICONS[k.icon], 20);
+
+      const text = document.createElement('div');
+      text.className = 'kn-file-text';
+      a.setAttribute('data-no-i18n', '');   // file names are not interface text
+      const info = li.querySelector(':scope > .file-info');
+      li.insertBefore(chip, a);
+      li.insertBefore(text, a);
+      text.appendChild(a);
+      if (info) text.appendChild(info);
+
+      const dl = document.createElement('span');
+      dl.className = 'kn-dl';
+      dl.setAttribute('aria-hidden', 'true');
+      dl.innerHTML = svg(ICON_DL, 17);
+      li.appendChild(dl);
+    });
+  }
+
+  const _renderFiles = renderFiles;
+  renderFiles = function(){
+    const out = _renderFiles.apply(this, arguments);
+    try { decorate(); } catch (e) { console.warn('[khan] file rows decorate failed', e); }
+    return out;
+  };
+
+  // upload: terracotta pill with an icon; the text node stays for i18n
+  const up = document.getElementById('uploadBtn');
+  if (up) {
+    up.classList.add('kn-upload');
+    up.insertAdjacentHTML('afterbegin', svg('<path d="M12 16V5M7 10l5-5 5 5M5 20h14"/>', 17).replace('stroke-width="1.9"', 'stroke-width="2.2"'));
+  }
+
+  // sticky toolbar sits exactly under the header, whatever height it ends up
+  const tb = document.querySelector('.toolbar');
+  const hd = document.querySelector('body > header');
+  if (tb && hd) {
+    const apply = () => { tb.style.top = hd.offsetHeight + 'px'; };
+    apply();
+    window.addEventListener('resize', apply);
+    window.addEventListener('load', apply);
+  }
+
+  // in case the list was already drawn before this script ran
+  try { decorate(); } catch (e) {}
+})();
 </script>
 </body>
 </html>

@@ -465,6 +465,119 @@
       }
     }
   </style>
+<link rel="stylesheet" href="/khan-pages.css">
+<style id="khan-page">
+  /* ---- Khan-Nomad file manager: same rows and pills as the files page ----
+     This page used to carry its own Bootstrap-blue palette; put the Steppe Night
+     colors from master.css back (a saved custom theme still wins, it uses !important). */
+  :root{
+    --primary:#1B3A4B; --primary-dark:#12293A;
+    --bg:#F6EFE3; --text:#2B2A26; --muted:#7A6F60;
+    --card-bg:#FFFDF8; --card-border:#E6DBC8;
+    --shadow:none; --radius:12px;
+  }
+  body.dark{
+    --primary:#D97B4A; --primary-dark:#B9612F;
+    --bg:#0F2230; --text:#F4E9D4; --muted:#A8B5BC;
+    --card-bg:#16303F; --card-border:#24475A;
+  }
+  body{font-family:Arial, Helvetica, sans-serif}
+
+  /* sidebar: quick-access pills */
+  .sidebar{border-right:1px solid var(--kn-line);padding:16px 12px}
+  .sidebar h3{font-size:.72rem;letter-spacing:.08em;margin:0 6px 8px}
+  .shortcut-list{display:flex;flex-direction:column;gap:4px}
+  .shortcut-item{padding:8px 14px;border-radius:999px;font-weight:600;color:var(--text);transition:background-color .15s ease, color .15s ease}
+  .shortcut-item:hover{background:var(--kn-sand)}
+  .shortcut-item.active{background:var(--kn-teal);color:var(--kn-cream)}
+  body.dark .shortcut-item.active{background:var(--kn-cream);color:var(--kn-teal)}
+
+  /* controls bar: pill buttons, terracotta upload, outlined delete */
+  .controls-bar{background:var(--card-bg);border:0;border-bottom:1px solid var(--kn-line);border-radius:0;box-shadow:none;padding:12px 20px;gap:10px}
+  .controls-left, .controls-right{flex-wrap:wrap;gap:8px}
+  .btn{height:36px;min-height:0;padding:0 15px;border-radius:999px;border:1px solid var(--kn-line);background:var(--card-bg);color:var(--text);font-weight:600;font-size:.85rem;gap:6px;box-shadow:none;white-space:nowrap}
+  .btn:hover:not(:disabled), .btn:active:not(:disabled){transform:none;box-shadow:none}
+  .btn:hover:not(:disabled){background:var(--kn-sand);color:var(--text);border-color:var(--kn-line)}
+  .btn:focus-visible{outline:2px solid var(--kn-terracotta);outline-offset:2px}
+  .btn:disabled{opacity:.45}
+  .btn.primary{background:var(--kn-terracotta);border-color:var(--kn-terracotta);color:#fff}
+  .btn.primary:hover:not(:disabled){background:var(--kn-terracotta);border-color:var(--kn-terracotta);color:#fff;filter:brightness(.95)}
+  body.dark .btn.primary, body.dark .btn.primary:hover:not(:disabled){color:#24140C}
+  .btn.danger{background:transparent;border-color:rgba(200,40,40,.45);color:#B3261E}
+  .btn.danger:hover:not(:disabled){background:#B3261E;border-color:#B3261E;color:#fff}
+  body.dark .btn.danger{color:#FF8A80;border-color:rgba(255,138,128,.45)}
+  body.dark .btn.danger:hover:not(:disabled){background:#FF8A80;border-color:#FF8A80;color:#2B0F0C}
+  /* back: a round arrow before the word */
+  #back-button{padding-left:10px}
+  #back-button::before{content:"";width:16px;height:16px;flex:none;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 12H5M11 18l-6-6 6-6'/%3E%3C/svg%3E") center / contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 12H5M11 18l-6-6 6-6'/%3E%3C/svg%3E") center / contain no-repeat}
+  .path-display{height:30px;line-height:30px;padding:0 12px;border-radius:999px;background:var(--kn-sand);color:var(--text);font-family:var(--mono);font-size:.8rem;max-width:40ch}
+  .selected-info{font-size:.8rem;color:var(--muted);font-weight:600}
+  .selected-info span{color:var(--text)}
+  .upload-progress{height:4px;border-radius:2px;background:var(--kn-line)}
+  .upload-progress > div{background:var(--kn-terracotta)}
+
+  /* file rows: round type chip, name over a muted type line */
+  .file-area{padding:14px 20px 28px}
+  .status-line{font-size:.8rem;padding:0 2px 10px}
+  .file-list{display:flex;flex-direction:column;gap:8px}
+  /* #root-items beats master.css's .file-list li / body.dark .file-list li card rules */
+  #root-items .file-item{margin:0;padding:10px 14px 10px 10px;gap:0;justify-content:flex-start;border-radius:14px;border:1px solid var(--kn-line);background:var(--card-bg);box-shadow:none;transition:border-color .15s ease, background-color .15s ease}
+  #root-items .file-item:hover{border-color:var(--kn-terracotta)}
+  #root-items .file-item:focus-visible{outline:none;box-shadow:0 0 0 2px var(--kn-terracotta)}
+  #root-items .file-item.selected{background:var(--kn-terracotta-soft);border-color:var(--kn-terracotta)}
+  .file-item .meta{padding:0;display:grid;grid-template-columns:40px minmax(0,1fr);grid-template-rows:auto auto;gap:1px 12px;align-items:center}
+  .file-item .folder-icon{display:none}
+  .file-item .kn-ico{grid-row:1 / 3;grid-column:1}
+  .file-item .file-name{grid-column:2;font-weight:600;font-size:.95rem;line-height:1.3;overflow-wrap:anywhere;align-self:end}
+  .file-item .file-type{grid-column:2;font-size:.72rem;line-height:1.3;align-self:start}
+  #root-items .empty{margin:0;padding:40px 16px;font-style:normal;background:transparent;box-shadow:none;justify-content:center;color:var(--muted)}
+  .kn-ico{flex:none;width:40px;height:40px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:var(--kn-sand);color:#8A6A3A}
+  .kn-ico[data-kind="media"]{background:var(--kn-terracotta-soft);color:var(--kn-terracotta)}
+  .kn-ico[data-kind="doc"]{background:var(--kn-teal-soft);color:var(--kn-teal)}
+  .kn-ico[data-kind="folder"]{background:var(--kn-teal);color:var(--kn-cream)}
+  body.dark .kn-ico{color:var(--kn-cream)}
+  body.dark .kn-ico[data-kind="media"]{color:var(--kn-terracotta)}
+  body.dark .kn-ico[data-kind="folder"]{background:var(--kn-teal-soft)}
+  /* a selected row's chip needs to stand off the terracotta tint */
+  .file-item.selected .kn-ico[data-kind="media"]{background:var(--card-bg)}
+
+  /* editor: a bottom sheet (wider than the usual 520px, it holds a text editor) */
+  #editor-modal{align-items:flex-end;justify-content:center;background:rgba(15,34,48,.48);animation:knFade .2s ease both}
+  #editor-modal .modal{position:relative;inset:auto;width:100%;max-width:760px;max-height:92vh;margin:0 auto;padding:4px 18px calc(16px + env(safe-area-inset-bottom, 0px));border:0;border-radius:18px 18px 0 0;background:var(--card-bg);color:var(--text);box-shadow:0 -10px 30px rgba(0,0,0,.18);z-index:auto;animation:knSheetUp .28s cubic-bezier(.2,.9,.2,1) both}
+  #editor-modal .kn-handle{display:block;width:64px;height:20px;margin:0 auto 6px;padding:0;border:0;background:transparent;cursor:pointer;flex:none}
+  #editor-modal .kn-handle::before{content:"";display:block;width:36px;height:4px;margin:0 auto;border-radius:2px;background:var(--kn-line)}
+  #editor-modal .kn-handle:focus-visible{outline:2px solid var(--kn-terracotta);outline-offset:2px}
+  #editor-title{font-family:var(--kn-serif);font-size:1.05rem;color:var(--text) !important;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  #editor-modal .editor{border-color:var(--kn-line);border-radius:12px;min-height:50vh;background:var(--bg)}
+  #editor-modal .modal > div{flex-wrap:wrap;gap:8px}
+  /* master.css paints every button inside .modal in the primary color; give these back their pill look */
+  #editor-modal .btn{height:36px;padding:0 15px;border-radius:999px;border:1px solid var(--kn-line);background:var(--card-bg);color:var(--text);font-size:.85rem;font-weight:600}
+  #editor-modal .btn:hover:not(:disabled){background:var(--kn-sand);color:var(--text)}
+  #editor-modal .btn.primary, #editor-modal .btn.primary:hover:not(:disabled){background:var(--kn-terracotta);border-color:var(--kn-terracotta);color:#fff}
+  body.dark #editor-modal .btn.primary{color:#24140C}
+  @keyframes knSheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+  @keyframes knFade{from{opacity:0}to{opacity:1}}
+
+  /* phones: shortcuts become a scrolling row of chips, controls wrap */
+  @media (max-width:768px){
+    .main-container{height:100vh;height:100dvh}
+    .sidebar{position:static;height:auto;padding:10px 12px;border-right:0;border-bottom:1px solid var(--kn-line)}
+    .sidebar h3{display:none}
+    .shortcut-list{flex-direction:row;gap:8px;overflow-x:auto;scrollbar-width:none}
+    .shortcut-list::-webkit-scrollbar{display:none}
+    .shortcut-item{flex:none;padding:7px 15px;border:1px solid var(--kn-line);background:var(--card-bg);font-size:.85rem}
+    .shortcut-item.active{border-color:transparent}
+    .content{min-height:0}
+    .controls-bar{padding:10px 12px;align-items:stretch}
+    .controls-left, .controls-right{justify-content:flex-start}
+    .file-area{padding:12px 12px 24px}
+    #editor-modal .modal{padding-left:12px;padding-right:12px}
+  }
+  @media (prefers-reduced-motion: reduce){
+    #editor-modal, #editor-modal .modal{animation:none}
+    .file-item, .btn, .shortcut-item{transition:none}
+  }
+</style>
 <script src="/i18n.js"></script>
 </head>
 <body>
@@ -1662,6 +1775,87 @@
       });
     });
 
+  })();
+  </script>
+
+  <script>
+  /* Khan-Nomad file manager: round type chips on the rows (same colors as the files page:
+     teal folders, terracotta video/audio, teal documents, sand for the rest) and a drag
+     handle on the editor sheet. The code above lives in a closure, so the rows are
+     decorated as they are added instead of wrapping its functions. */
+  (function(){
+    const svg = (paths) => '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' + paths + '</svg>';
+    const ICONS = {
+      folder:  '<path d="M3 7.5A2.5 2.5 0 0 1 5.5 5H9l2 2.2h7.5A2.5 2.5 0 0 1 21 9.7v7.8a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z"/>',
+      video:   '<rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M10 9.5v5l4.5-2.5z"/>',
+      audio:   '<path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/>',
+      doc:     '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/>',
+      archive: '<rect x="3" y="4" width="18" height="5" rx="1.5"/><path d="M5 9v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9M10 13h4"/>',
+      image:   '<rect x="3" y="3" width="18" height="18" rx="2.5"/><circle cx="9" cy="9" r="1.8"/><path d="M21 15l-5-5L5 21"/>',
+      file:    '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/>'
+    };
+    const VIDEO = /^(mp4|mkv|avi|mov|webm|m4v|mpg|mpeg|ts|m2ts|wmv|flv|3gp)$/;
+    const AUDIO = /^(mp3|flac|wav|m4a|m4b|aac|ogg|oga|opus|wma|aiff?)$/;
+    const DOC   = /^(pdf|txt|md|rtf|doc|docx|odt|xls|xlsx|ods|csv|ppt|pptx|odp|epub|mobi|azw3|fb2|cbz|cbr|html?|css|js|json|xml|yml|yaml|ini|conf|ndjson)$/;
+    const ARCH  = /^(zip|7z|rar|tar|gz|tgz|bz2|xz|iso|dmg|exe|msi|apk|deb|bin|img)$/;
+    const IMAGE = /^(jpe?g|png|gif|webp|avif|bmp|svg|heic|tiff?)$/;
+
+    function kindOf(name, isDir){
+      if (isDir) return { kind: 'folder', icon: 'folder' };
+      const i = String(name || '').lastIndexOf('.');
+      const ext = i > 0 ? name.slice(i + 1).toLowerCase() : '';
+      if (VIDEO.test(ext)) return { kind: 'media', icon: 'video' };
+      if (AUDIO.test(ext)) return { kind: 'media', icon: 'audio' };
+      if (DOC.test(ext))   return { kind: 'doc',   icon: 'doc' };
+      if (ARCH.test(ext))  return { kind: 'other', icon: 'archive' };
+      if (IMAGE.test(ext)) return { kind: 'other', icon: 'image' };
+      return { kind: 'other', icon: 'file' };
+    }
+
+    function decorate(root){
+      (root || document).querySelectorAll('.file-item').forEach(item => {
+        const meta = item.querySelector('.meta');
+        if (!meta || meta.querySelector('.kn-ico')) return;
+        const nameEl = meta.querySelector('.file-name');
+        if (nameEl) nameEl.setAttribute('data-no-i18n', '');   // folder and file names are not interface text
+        const k = kindOf(nameEl ? nameEl.textContent : '', item.getAttribute('data-type') === 'd');
+        const chip = document.createElement('span');
+        chip.className = 'kn-ico';
+        chip.dataset.kind = k.kind;
+        chip.setAttribute('aria-hidden', 'true');
+        chip.innerHTML = svg(ICONS[k.icon]);
+        meta.insertBefore(chip, meta.firstChild);
+      });
+    }
+
+    const list = document.getElementById('root-items');
+    if (list) {
+      decorate(list);
+      new MutationObserver(() => decorate(list)).observe(list, { childList: true });
+    }
+
+    // rows are focusable: Enter acts like a click (opens a folder, selects a file)
+    document.addEventListener('keydown', (e) => {
+      const t = e.target;
+      if (e.key === 'Enter' && t && t.classList && t.classList.contains('file-item')) {
+        e.preventDefault();
+        t.click();
+      }
+    });
+
+    // editor sheet: drag handle on top that closes it like Cancel
+    const sheet = document.querySelector('#editor-modal .modal');
+    const cancel = document.getElementById('editor-cancel');
+    if (sheet && cancel) {
+      const h = document.createElement('button');
+      h.type = 'button';
+      h.className = 'kn-handle';
+      h.setAttribute('aria-label', 'Close');
+      h.addEventListener('click', () => cancel.click());
+      sheet.insertBefore(h, sheet.firstChild);
+      // no close-on-backdrop here: a text selection dragged out of the editor would
+      // end as a backdrop click and throw the unsaved edits away
+    }
   })();
   </script>
   </body>
