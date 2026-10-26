@@ -206,6 +206,12 @@
   .kn-sheet button:focus-visible{outline:2px solid var(--kn-terracotta);outline-offset:2px}
   #actionModal .kn-cancel, #episodeModal .kn-cancel{width:100%;margin:-4px 0 0;padding:8px;border:0;background:transparent;color:var(--muted);font-size:.9rem;font-weight:600;cursor:pointer}
   #episodeModal .kn-cancel-wrap{flex:none}
+  /* year and description from show.info.json */
+  #episodeModal .kn-about{flex:none;display:flex;flex-direction:column;align-items:flex-start;gap:4px;margin-top:-2px}
+  #episodeModal .kn-about[hidden], #episodeModal .kn-about [hidden]{display:none !important}
+  #episodeModal .kn-desc{margin:0;font-size:.88rem;line-height:1.45;color:var(--text);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
+  #episodeModal .kn-desc.kn-open{display:block;-webkit-line-clamp:unset;max-height:30vh;overflow-y:auto}
+  #episodeModal .kn-more{width:auto;margin:0;padding:2px 0;border:0;background:transparent;color:var(--kn-terracotta);font-size:.85rem;font-weight:700;cursor:pointer;border-radius:4px}
 
   /* resume banner in the episode sheet */
   #episodeResumeBanner{flex:none;background:var(--kn-terracotta-soft) !important;color:var(--text) !important;border-radius:14px;padding:10px 12px;font-size:.85rem}
@@ -274,6 +280,10 @@
           <h2 id="episodeModalTitle" class="kn-sheet-title" data-no-i18n>Select an episode</h2>
           <div id="knEpisodeMeta" class="kn-sheet-meta"></div>
         </div>
+      </div>
+      <div id="knShowAbout" class="kn-about" hidden>
+        <p id="knShowDesc" class="kn-desc" data-no-i18n></p>
+        <button type="button" id="knShowMore" class="kn-more" aria-expanded="false" aria-controls="knShowDesc" hidden>More</button>
       </div>
       <div id="episodeResumeBanner" style="display:none"></div>
       <div id="episodeList" class="episode-list"></div>
@@ -837,10 +847,15 @@ function buildShowsFromIndexes(data, root = '/Shows'){
         }
     }
 
+    // optional show.info.json (year, description) written by tools/movie-info
+    const infoEntry = (e.entries || []).find(item => item.t === 'f' && String(item.n).toLowerCase() === 'show.info.json');
+
     out.push({
         name: seriesName.replace(/[_\.]+/g,' ').trim(),
         dir: seriesDir,
         cover: cover || null,
+        info: infoEntry ? normalizePath(infoEntry.p) : null,
+        infoV: infoEntry ? (infoEntry.mt || infoEntry.sz || 0) : 0,
         _loaded: false, 
         entries: e.entries || [],
         episodes: null
@@ -2187,12 +2202,65 @@ NomadUI.applyDownloadPolicy('downloadButton');
 
   const episodeThumb = document.getElementById('knEpisodeThumb');
   const episodeMeta = document.getElementById('knEpisodeMeta');
-  function fillEpisodeSheet(show){
-    fillThumb(episodeThumb, show);
+  function fillEpisodeMeta(show, info){
     episodeMeta.innerHTML = '';
+    if(info && info.year) addMeta(episodeMeta, String(info.year));
     const n = (show && show.episodes && show.episodes.length) || 0;
     if(n) addMeta(episodeMeta, n === 1 ? '1 episode' : n + ' episodes');
+  }
+
+  /* ---- show.info.json (tools/movie-info): year in the meta line, clamped description ---- */
+  const showAbout = document.getElementById('knShowAbout');
+  const showDesc = document.getElementById('knShowDesc');
+  const showMore = document.getElementById('knShowMore');
+  const infoCache = new Map();   // "path|version" -> Promise<info|null>
+  function loadShowInfo(show){
+    if(!show || !show.info) return Promise.resolve(null);
+    const key = show.info + '|' + (show.infoV || 0);
+    if(infoCache.has(key)) return infoCache.get(key);
+    const p = fetch(`${MEDIA_ENDPOINT}?file=${encodeURIComponent(show.info)}&_=${show.infoV || 0}`)
+      .then(r => {
+        if(r.status === 404) return null;
+        if(!r.ok) throw new Error('info ' + r.status);
+        return r.json().catch(() => null);
+      })
+      .then(d => {
+        if(!d || typeof d !== 'object' || Array.isArray(d)) return null;
+        const year = Math.round(Number(d.year));
+        const desc = typeof d.description === 'string' ? d.description.trim().slice(0, 3000) : '';
+        return { year: (year >= 1870 && year <= 2200) ? year : 0, description: desc };
+      })
+      .catch(err => { infoCache.delete(key); console.warn('[khan] show info', err); return null; });
+    infoCache.set(key, p);
+    return p;
+  }
+  function setShowOpen(open){
+    showDesc.classList.toggle('kn-open', open);
+    showMore.textContent = open ? 'Less' : 'More';
+    showMore.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+  showMore.addEventListener('click', () => setShowOpen(!showDesc.classList.contains('kn-open')));
+  function fillShowAbout(info){
+    setShowOpen(false);
+    showMore.hidden = true;
+    showDesc.textContent = (info && info.description) || '';
+    showAbout.hidden = !showDesc.textContent;
+    if(showDesc.textContent){
+      requestAnimationFrame(() => { showMore.hidden = !(showDesc.scrollHeight > showDesc.clientHeight + 2); });
+    }
+  }
+
+  function fillEpisodeSheet(show){
+    fillThumb(episodeThumb, show);
+    fillEpisodeMeta(show, null);
+    fillShowAbout(null);
     decorateEpisodeList(show);
+    if(show && show.info){
+      loadShowInfo(show).then(info => {
+        if(!info || currentShow !== show || episodeModal.style.display !== 'flex') return;
+        try { fillEpisodeMeta(show, info); fillShowAbout(info); } catch(e){}
+      });
+    }
   }
   const _openEpisodeModal = openEpisodeModal;
   openEpisodeModal = function(show){

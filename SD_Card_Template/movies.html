@@ -252,6 +252,19 @@
   #modal .kn-actions button:hover{filter:brightness(.95)}
   #modal .kn-actions button:focus-visible, #modal .kn-cancel:focus-visible, #modal .kn-handle:focus-visible{outline:2px solid var(--kn-terracotta);outline-offset:2px}
   #modal .kn-cancel{width:100%;margin:-4px 0 0;padding:8px;border:0;background:transparent;color:var(--muted);font-size:.9rem;font-weight:600;cursor:pointer}
+  /* details from <movie>.info.json: genres, clamped description, source credit */
+  #modal .kn-about{display:flex;flex-direction:column;gap:8px;margin-top:-2px}
+  #modal .kn-about[hidden], #modal .kn-about [hidden]{display:none !important}
+  .kn-genres{display:flex;flex-wrap:wrap;gap:6px}
+  .kn-genres:empty{display:none}
+  .kn-genres span{font-size:.72rem;font-weight:600;line-height:1;padding:5px 9px;border-radius:999px;border:1px solid var(--kn-line);color:var(--muted);white-space:nowrap}
+  .kn-desc{margin:0;font-size:.9rem;line-height:1.45;color:var(--text);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
+  .kn-desc.kn-open{display:block;-webkit-line-clamp:unset;overflow:visible}
+  .kn-desc:empty{display:none}
+  .kn-desc-foot{display:flex;align-items:center;gap:10px}
+  #modal .kn-more{width:auto;margin:0;padding:2px 0;border:0;background:transparent;color:var(--kn-terracotta);font-size:.85rem;font-weight:700;cursor:pointer;border-radius:4px}
+  #modal .kn-more:focus-visible{outline:2px solid var(--kn-terracotta);outline-offset:2px}
+  .kn-src{margin-left:auto;font-size:.72rem;color:var(--muted)}
   @keyframes knSheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
   @keyframes knFade{from{opacity:0}to{opacity:1}}
   @media (prefers-reduced-motion: reduce){
@@ -294,6 +307,14 @@
         <div class="kn-sheet-info">
           <div id="modalSub" class="kn-sheet-title" data-no-i18n></div>
           <div id="knSheetMeta" class="kn-sheet-meta"></div>
+        </div>
+      </div>
+      <div id="knSheetAbout" class="kn-about" hidden>
+        <div id="knSheetGenres" class="kn-genres" data-no-i18n></div>
+        <p id="knSheetDesc" class="kn-desc" data-no-i18n></p>
+        <div id="knSheetFoot" class="kn-desc-foot">
+          <button type="button" id="knSheetMore" class="kn-more" aria-expanded="false" aria-controls="knSheetDesc" hidden>More</button>
+          <span id="knSheetSrc" class="kn-src" data-no-i18n></span>
         </div>
       </div>
       <div class="kn-actions">
@@ -561,6 +582,10 @@ async function buildFromIndexes(root){
     const image = v.files.find(x => isImageName(x.name));
     const subs = v.files.filter(x => isSubtitleName(x.name));
     const dir = v.dir;
+    // "<base>.info.json" sidecar (year, runtime, description) lands in a group of its own,
+    // keyed by "<base>.info". The sheet only fetches it when the index lists it.
+    const infoGroup = map.get(`${dir}::${v.base}.info`);
+    const infoFile = infoGroup && infoGroup.files.find(x => x.name.toLowerCase() === `${v.base}.info.json`);
     const path = normalizePath((dir === '/' ? '' : dir) + '/' + media.name);
     out.push({
     name: prettify(media.name),
@@ -570,7 +595,9 @@ async function buildFromIndexes(root){
     dir,
     sz: media.sz || 0,
     mt: media.mt || 0,
-    subtitles: subs.map(s => ({ path: normalizePath((dir === '/' ? '' : dir) + '/' + s.name), ext: ext(s.name) }))
+    subtitles: subs.map(s => ({ path: normalizePath((dir === '/' ? '' : dir) + '/' + s.name), ext: ext(s.name) })),
+    info: infoFile ? normalizePath((dir === '/' ? '' : dir) + '/' + infoFile.name) : null,
+    infoV: infoFile ? (infoFile.mt || infoFile.sz || 0) : 0
     });
   }
   out.sort((a,b) => a.name.localeCompare(b.name));
@@ -1405,18 +1432,10 @@ NomadUI.applyDownloadPolicy('downloadButton');
       thumbBox.innerHTML = FILM_SVG;
     }
 
-    metaBox.innerHTML = '';
-    const add = (txt, cls) => {
-      const s = document.createElement('span');
-      if(cls) s.className = cls;
-      s.textContent = txt;
-      metaBox.appendChild(s);
-    };
-    if(movie.sz > 0) add(fmtSize(movie.sz));
     const w = watchInfo(movie);
-    if(w && w.dur > 0) add(Math.max(1, Math.round(w.dur / 60)) + ' min');
     const canResume = !!(w && w.pos > 1);   // same rule showMovieOptions uses for #resumeButton
-    if(canResume && w.dur > w.pos) add(Math.max(1, Math.round((w.dur - w.pos) / 60)) + ' min left', 'kn-left');
+    fillMeta(movie, w, null);
+    fillAbout(null);
 
     if(canResume){
       resumeButton.textContent = 'Resume';
@@ -1429,10 +1448,105 @@ NomadUI.applyDownloadPolicy('downloadButton');
     }
   }
 
+  // year · runtime · size · N min left. The sidecar's runtime wins over the
+  // duration remembered from watching (that one only exists after a first play).
+  function fillMeta(movie, w, info){
+    metaBox.innerHTML = '';
+    const add = (txt, cls) => {
+      const s = document.createElement('span');
+      if(cls) s.className = cls;
+      s.textContent = txt;
+      metaBox.appendChild(s);
+    };
+    if(info && info.year) add(String(info.year));
+    if(info && info.runtime) add(info.runtime + ' min');
+    else if(w && w.dur > 0) add(Math.max(1, Math.round(w.dur / 60)) + ' min');
+    if(movie.sz > 0) add(fmtSize(movie.sz));
+    if(w && w.pos > 1 && w.dur > w.pos) add(Math.max(1, Math.round((w.dur - w.pos) / 60)) + ' min left', 'kn-left');
+  }
+
+  /* ---- <movie>.info.json sidecars (written by tools/movie-info) ---- */
+  const aboutBox = document.getElementById('knSheetAbout');
+  const genresBox = document.getElementById('knSheetGenres');
+  const descBox = document.getElementById('knSheetDesc');
+  const moreBtn = document.getElementById('knSheetMore');
+  const srcBox = document.getElementById('knSheetSrc');
+  const footBox = document.getElementById('knSheetFoot');
+  const infoCache = new Map();   // "path|version" -> Promise<info|null>, one fetch per sidecar per page load
+
+  const str = (v, max) => (typeof v === 'string' && v.trim()) ? v.trim().slice(0, max) : '';
+  function cleanInfo(d){
+    if(!d || typeof d !== 'object' || Array.isArray(d)) return null;
+    const year = Math.round(Number(d.year));
+    const runtime = Math.round(Number(d.runtime));
+    return {
+      title: str(d.title, 200),
+      year: (year >= 1870 && year <= 2200) ? year : 0,
+      runtime: (runtime > 0 && runtime < 6000) ? runtime : 0,
+      genres: Array.isArray(d.genres) ? d.genres.map(g => str(g, 40)).filter(Boolean).slice(0, 6) : [],
+      description: str(d.description, 3000),
+      source: str(d.source, 60)
+    };
+  }
+  function loadInfo(movie){
+    if(!movie || !movie.info) return Promise.resolve(null);
+    const key = movie.info + '|' + (movie.infoV || 0);
+    if(infoCache.has(key)) return infoCache.get(key);
+    const p = fetch(`${fileUrl(movie.info)}&_=${movie.infoV || 0}`)
+      .then(r => {
+        if(r.status === 404) return null;          // gone since the index was built: no info
+        if(!r.ok) throw new Error('info ' + r.status);
+        return r.json().then(cleanInfo, () => null);   // broken JSON: treat as no info
+      })
+      .catch(err => { infoCache.delete(key); console.warn('[khan] movie info', err); return null; });
+    infoCache.set(key, p);
+    return p;
+  }
+
+  function setOpen(open){
+    descBox.classList.toggle('kn-open', open);
+    moreBtn.textContent = open ? 'Less' : 'More';
+    moreBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+  moreBtn.addEventListener('click', () => setOpen(!descBox.classList.contains('kn-open')));
+
+  function fillAbout(info){
+    genresBox.innerHTML = '';
+    descBox.textContent = '';
+    srcBox.textContent = '';
+    moreBtn.hidden = true;
+    setOpen(false);
+    const has = info && (info.genres.length || info.description);
+    aboutBox.hidden = !has;
+    if(!has) return;
+    info.genres.forEach(g => {
+      const s = document.createElement('span');
+      s.textContent = g;
+      genresBox.appendChild(s);
+    });
+    descBox.textContent = info.description;
+    srcBox.textContent = info.description ? info.source : '';
+    footBox.hidden = !srcBox.textContent;
+    // only offer "More" when the 3-line clamp actually cuts something off
+    if(info.description){
+      requestAnimationFrame(() => {
+        if(descBox.scrollHeight > descBox.clientHeight + 2){ moreBtn.hidden = false; footBox.hidden = false; }
+      });
+    }
+  }
+
+  function applyInfo(movie, info){
+    if(!info || currentMovie !== movie || modal.style.display !== 'flex') return;
+    if(info.title) modalSub.textContent = info.title;
+    fillMeta(movie, watchInfo(movie), info);
+    fillAbout(info);
+  }
+
   const _showMovieOptions = showMovieOptions;
   showMovieOptions = function(movie){
     const out = _showMovieOptions.apply(this, arguments);
     try { fillSheet(movie); } catch(e){ console.warn('[khan] sheet fill failed', e); }
+    if(movie && movie.info) loadInfo(movie).then(info => { try { applyInfo(movie, info); } catch(e){} });
     return out;
   };
 
