@@ -145,6 +145,101 @@
   body.dark .back-btn { background: var(--white-alpha-12); color: var(--color-white); }
   body.dark .view-btn.active { border-color: var(--primary); }
 </style>
+<link rel="stylesheet" href="/khan-pages.css">
+<style id="khan-page">
+  /* ---- Khan-Nomad shows: poster grid ---- */
+  main{padding:14px 16px 24px}
+  .media-grid{gap:18px 12px}
+  @media (max-width:600px){
+    main{padding:12px 12px 24px}
+    .media-grid{gap:14px 10px}
+    /* compact = more posters per row, gallery = fewer (3 per row is the default) */
+    .media-grid.small  {grid-template-columns:repeat(4,minmax(0,1fr));}
+    .media-grid.medium {grid-template-columns:repeat(3,minmax(0,1fr));}
+    .media-grid.large  {grid-template-columns:repeat(2,minmax(0,1fr));}
+    .media-grid .media-card{max-width:none}
+  }
+  .media-card{background:transparent !important;box-shadow:none !important;border-radius:0;overflow:visible;outline:none}
+  .media-card:hover{transform:none;box-shadow:none !important}
+  .media-grid .media-card .thumb-wrapper{border-radius:10px;overflow:hidden;background:var(--kn-sand);transition:transform .2s ease, box-shadow .2s ease}
+  @media (hover:hover){
+    .media-card:hover .thumb-wrapper{transform:translateY(-3px);box-shadow:0 8px 18px rgba(27,58,75,.18)}
+  }
+  .media-card:active .thumb-wrapper{transform:scale(.98)}
+  .media-card:focus-visible .thumb-wrapper{box-shadow:0 0 0 3px var(--kn-terracotta)}
+  .media-card .fallback-text{color:var(--text);font-family:var(--kn-serif);font-weight:600;font-size:.85rem;line-height:1.25;padding:8px}
+  .media-card .badge-resume{display:none !important}
+  .kn-title{margin-top:7px;padding:0 2px;font-size:.8rem;font-weight:600;line-height:1.25;color:var(--text);text-align:left;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
+  .media-grid.small .kn-title{font-size:.72rem}
+  .media-grid.large .kn-title{font-size:.9rem}
+  /* watched fraction of the show along the poster's bottom edge */
+  .kn-progress{position:absolute;left:0;right:0;bottom:0;height:3px;background:rgba(0,0,0,.35);z-index:5;pointer-events:none}
+  .kn-progress i{display:block;height:100%;background:var(--kn-terracotta)}
+  /* first seen on this device in the last 3 days */
+  .kn-new{position:absolute;top:6px;left:6px;z-index:5;background:var(--kn-terracotta);color:#fff;font-size:10px;font-weight:700;line-height:1;padding:4px 7px;border-radius:999px;letter-spacing:.02em;pointer-events:none;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+  body.dark .kn-new{color:#24140C}
+
+  /* ---- episode picker and action modal as bottom sheets ---- */
+  #episodeModal.kn-sheet, #actionModal.kn-sheet{align-items:flex-end;justify-content:center;padding:0;background:rgba(15,34,48,.48);animation:knFade .2s ease both}
+  #episodeModal.kn-sheet > .episode-modal-content,
+  #actionModal.kn-sheet > .modal-content{position:relative;display:flex;flex-direction:column;gap:14px;width:100%;max-width:520px;margin:0 auto;border:0;border-radius:18px 18px 0 0;padding:6px 18px calc(14px + env(safe-area-inset-bottom, 0px));text-align:left;box-shadow:0 -10px 30px rgba(0,0,0,.18);max-height:88vh;overflow:auto;background:var(--card-bg);color:var(--text);animation:knSheetUp .28s cubic-bezier(.2,.9,.2,1) both}
+  #episodeModal.kn-sheet > .episode-modal-content{overflow:hidden;gap:12px}
+  #episodeModal .kn-handle, #actionModal .kn-handle{display:block;width:64px;height:20px;margin:0 auto -4px;padding:0;border:0;background:transparent;cursor:pointer;flex:none}
+  #episodeModal .kn-handle::before, #actionModal .kn-handle::before{content:"";display:block;width:36px;height:4px;margin:0 auto;border-radius:2px;background:var(--kn-line)}
+  .kn-sheet-head{display:flex;gap:14px;align-items:center;flex:none}
+  .kn-sheet-thumb{flex:none;width:64px;aspect-ratio:2/3;border-radius:8px;overflow:hidden;background:var(--kn-sand);color:var(--muted);display:flex;align-items:center;justify-content:center}
+  .kn-sheet-thumb img{display:block;width:100%;height:100%;object-fit:cover}
+  .kn-sheet-info{flex:1;min-width:0}
+  #episodeModal h2.kn-sheet-title, #actionModal .modal-content h2.kn-sheet-title{margin:0;font-family:var(--kn-serif);font-size:1.2rem;font-weight:600;line-height:1.25;color:var(--text);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
+  #actionSub.kn-sheet-sub{margin-top:2px;font-size:.88rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .kn-sheet-meta{margin-top:5px;font-size:.85rem;color:var(--muted);display:flex;flex-wrap:wrap;gap:2px 0}
+  .kn-sheet-meta:empty{display:none}
+  .kn-sheet-meta span + span::before{content:"\00B7";margin:0 6px;color:var(--muted);font-weight:400}
+  .kn-sheet-meta .kn-left{color:var(--kn-terracotta);font-weight:600}
+  #actionModal .kn-actions{display:flex;gap:10px;align-items:stretch}
+  #actionModal .kn-actions button{flex:1 1 0;width:auto;min-width:0;min-height:46px;margin:0;padding:10px 12px;border-radius:12px;font-size:.95rem;font-weight:700;cursor:pointer;transition:filter .15s ease, background-color .15s ease}
+  #actionModal .kn-actions .kn-primary, #episodeResumeBanner button{background:var(--kn-terracotta);color:#fff;border:1px solid var(--kn-terracotta)}
+  body.dark #actionModal .kn-actions .kn-primary, body.dark #episodeResumeBanner button{color:#24140C}
+  #actionModal .kn-actions .kn-outline{background:transparent;color:var(--text);border:1.5px solid var(--kn-line)}
+  #actionModal .kn-actions .kn-icon{flex:0 0 46px;width:46px;padding:0;display:inline-flex;align-items:center;justify-content:center;background:transparent;color:var(--text);border:1.5px solid var(--kn-line)}
+  #actionModal .kn-actions button:hover, #episodeResumeBanner button:hover{filter:brightness(.95)}
+  .kn-sheet button:focus-visible{outline:2px solid var(--kn-terracotta);outline-offset:2px}
+  #actionModal .kn-cancel, #episodeModal .kn-cancel{width:100%;margin:-4px 0 0;padding:8px;border:0;background:transparent;color:var(--muted);font-size:.9rem;font-weight:600;cursor:pointer}
+  #episodeModal .kn-cancel-wrap{flex:none}
+
+  /* resume banner in the episode sheet */
+  #episodeResumeBanner{flex:none;background:var(--kn-terracotta-soft) !important;color:var(--text) !important;border-radius:14px;padding:10px 12px;font-size:.85rem}
+  #episodeResumeBanner > div{color:var(--text);margin-bottom:8px !important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #episodeResumeBanner button{display:block;width:100%;min-height:44px;padding:10px 12px;border-radius:12px;font-size:.95rem;font-weight:700;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #episodeResumeBanner button[disabled]{background:transparent;color:var(--muted);border:1.5px solid var(--kn-line);cursor:default;filter:none}
+
+  /* episode list: clean rounded rows with a progress bar */
+  #episodeList.episode-list{flex:1 1 auto;min-height:0;max-height:none;overflow-y:auto;padding:0 2px 2px;margin:0 -2px;background:transparent;border:0;-webkit-overflow-scrolling:touch}
+  #episodeList .ep-row{display:block;padding:0;margin:0 0 6px;border:0;background:transparent}
+  #episodeList .ep-row button{display:flex;flex-direction:column;align-items:stretch;gap:7px;width:100%;margin:0;padding:12px 14px;text-align:left;background:var(--kn-sand);color:var(--text);border:0;border-radius:12px;font-size:.95rem;font-weight:600;cursor:pointer;transition:filter .15s ease}
+  #episodeList .ep-row button:hover{filter:brightness(.97)}
+  body.dark #episodeList .ep-row button:hover{filter:brightness(1.12)}
+  .kn-ep-line{display:flex;align-items:center;gap:10px;min-width:0}
+  .kn-ep-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .kn-ep-left{flex:none;font-size:.78rem;font-weight:700;color:var(--kn-terracotta)}
+  .kn-ep-done{flex:none;display:inline-flex;color:var(--kn-terracotta)}
+  .kn-ep-done-row .kn-ep-name{color:var(--muted)}
+  .kn-ep-bar{display:block;height:3px;border-radius:2px;background:rgba(0,0,0,.10);overflow:hidden}
+  body.dark .kn-ep-bar{background:rgba(255,255,255,.12)}
+  .kn-ep-bar i{display:block;height:100%;background:var(--kn-terracotta);border-radius:2px}
+  #episodeList .season-toggle{display:flex;align-items:center;justify-content:space-between;margin:6px 0 6px;padding:10px 4px 8px;background:transparent;color:var(--text);border-radius:0;border-bottom:1px solid var(--kn-line);font-family:var(--kn-serif);font-size:1.02rem;font-weight:600}
+  #episodeList .season-toggle > div:last-child{color:var(--muted);font-size:.7rem;font-family:var(--font-secondary, sans-serif)}
+  #episodeList .season-content{padding:0;margin:0 0 8px}
+
+  @keyframes knSheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+  @keyframes knFade{from{opacity:0}to{opacity:1}}
+  @media (prefers-reduced-motion: reduce){
+    #episodeModal.kn-sheet, #actionModal.kn-sheet,
+    #episodeModal.kn-sheet > .episode-modal-content, #actionModal.kn-sheet > .modal-content{animation:none}
+    .media-card .thumb-wrapper{transition:none}
+    .media-card:hover .thumb-wrapper, .media-card:active .thumb-wrapper{transform:none}
+  }
+</style>
 <script src="/i18n.js"></script>
 </head>
 <body data-page="shows">
@@ -170,22 +265,39 @@
     </div>
   </main>
 
-  <div id="episodeModal" class="episode-modal" role="dialog" aria-modal="true">
+  <div id="episodeModal" class="episode-modal kn-sheet" role="dialog" aria-modal="true" aria-labelledby="episodeModalTitle">
     <div class="episode-modal-content" role="document">
-      <h2 id="episodeModalTitle">Select an episode</h2>
-      <div id="episodeResumeBanner" style="display:none;margin-bottom:8px"></div>
+      <button type="button" id="knEpisodeHandle" class="kn-handle" aria-label="Close"></button>
+      <div class="kn-sheet-head">
+        <div id="knEpisodeThumb" class="kn-sheet-thumb" aria-hidden="true"></div>
+        <div class="kn-sheet-info">
+          <h2 id="episodeModalTitle" class="kn-sheet-title" data-no-i18n>Select an episode</h2>
+          <div id="knEpisodeMeta" class="kn-sheet-meta"></div>
+        </div>
+      </div>
+      <div id="episodeResumeBanner" style="display:none"></div>
       <div id="episodeList" class="episode-list"></div>
-      <div style="margin-top:10px"><button id="episodeCloseBtn" class="cancel">Close</button></div>
+      <div class="kn-cancel-wrap"><button id="episodeCloseBtn" class="cancel kn-cancel">Close</button></div>
     </div>
   </div>
 
-  <div id="actionModal" class="modal" role="dialog" aria-modal="true">
+  <div id="actionModal" class="modal kn-sheet" role="dialog" aria-modal="true" aria-labelledby="actionTitle">
     <div class="modal-content" role="document">
-      <h2 id="actionTitle">Play / Download</h2>
-      <div id="actionSub"></div>
-      <button id="playButton">Play (from start)</button>
-      <button id="downloadButton" class="cancel" data-dl>Download</button>
-      <button id="actionCloseBtn" class="cancel">Cancel</button>
+      <button type="button" id="knActionHandle" class="kn-handle" aria-label="Close"></button>
+      <div class="kn-sheet-head">
+        <div id="knActionThumb" class="kn-sheet-thumb" aria-hidden="true"></div>
+        <div class="kn-sheet-info">
+          <h2 id="actionTitle" class="kn-sheet-title" data-no-i18n>Play / Download</h2>
+          <div id="actionSub" class="kn-sheet-sub" data-no-i18n></div>
+          <div id="knActionMeta" class="kn-sheet-meta"></div>
+        </div>
+      </div>
+      <div class="kn-actions">
+        <button id="knResumeButton" class="kn-primary" style="display:none">Resume</button>
+        <button id="playButton" class="kn-primary">Play</button>
+        <button id="downloadButton" class="kn-icon" data-dl aria-label="Download" title="Download"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg></button>
+      </div>
+      <button id="actionCloseBtn" class="cancel kn-cancel">Cancel</button>
     </div>
   </div>
 
@@ -1837,6 +1949,307 @@ sortSelect.addEventListener('change', () => applySort(sortSelect.value));
 
 /* admin toggle: hide the download action when downloads are disabled */
 NomadUI.applyDownloadPolicy('downloadButton');
+</script>
+
+<script>
+/* Khan-Nomad shows page: poster titles, show progress bars, "New" badges, bottom-sheet
+   episode picker and action modal. Hooks the functions above instead of rewriting them. */
+(function(){
+  const NEW_MS = 3 * 24 * 60 * 60 * 1000;   // a show stays "New" for 3 days after first seen
+  const SEEN_KEY = 'kn:firstSeen:shows';
+  const TV_SVG = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M8 2.5l4 3.5 4-3.5"/></svg>';
+  const CHECK_SVG = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+  const has = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
+  const el = (tag, cls) => { const n = document.createElement(tag); if(cls) n.className = cls; return n; };
+
+  /* show dir -> first-seen timestamp. The very first visit records everything with 0,
+     so an existing library does not light up as new. */
+  function firstSeenMap(keys){
+    let map = null;
+    try { map = JSON.parse(localStorage.getItem(SEEN_KEY) || 'null'); } catch(e){ map = null; }
+    const fresh = !map || typeof map !== 'object' || Array.isArray(map);
+    if(fresh) map = {};
+    if(!keys.length) return map;           // nothing loaded yet, do not lock in an empty map
+    const now = Date.now();
+    let changed = fresh;
+    for(const k of keys){
+      if(k && !has(map, k)){ map[k] = fresh ? 0 : now; changed = true; }
+    }
+    if(changed){ try { localStorage.setItem(SEEN_KEY, JSON.stringify(map)); } catch(e){} }
+    return map;
+  }
+  function isNew(ts){ return typeof ts === 'number' && ts > 0 && (Date.now() - ts) < NEW_MS; }
+
+  /* watch store keyed by normalized path only (newest entry wins) */
+  function storeByPath(){
+    const m = new Map();
+    const s = readResume();
+    for(const k of Object.keys(s)){
+      const v = s[k];
+      if(!v || typeof v !== 'object') continue;
+      const p = normalizePath(k.split('|')[0] || '');
+      const prev = m.get(p);
+      if(!prev || (v.updated || 0) > (prev.updated || 0)) m.set(p, v);
+    }
+    return m;
+  }
+  // position/duration of one episode. nextEpisode() parks {position:1, duration:<bytes>}
+  // on the next episode, so position must be past 1 before it counts as started
+  function epState(e){
+    if(!e) return { done:false, started:false, pos:0, dur:0 };
+    const pos = Number(e.position) || 0, dur = Number(e.duration) || 0;
+    const done = !!e.completed;
+    return { done, started: !done && pos > 1 && dur > pos, pos, dur };
+  }
+  // watched share of a whole show: completed episodes plus the partial one
+  function showFrac(show, byPath){
+    try { if(!show._loaded) loadSeriesEpisodes(show); } catch(e){ return 0; }
+    const eps = show.episodes || [];
+    if(!eps.length) return 0;
+    let done = 0;
+    for(const ep of eps){
+      const st = epState(byPath.get(normalizePath(ep.path)));
+      if(st.done) done += 1;
+      else if(st.started) done += st.pos / st.dur;
+    }
+    return Math.min(1, done / eps.length);
+  }
+
+  function setBar(thumb, frac){
+    if(!thumb) return;
+    let bar = thumb.querySelector('.kn-progress');
+    if(!(frac > 0)){ if(bar) bar.remove(); return; }
+    if(!bar){
+      bar = el('div', 'kn-progress');
+      bar.setAttribute('aria-hidden', 'true');
+      bar.appendChild(document.createElement('i'));
+      thumb.appendChild(bar);
+    }
+    bar.firstChild.style.width = Math.max(3, Math.round(frac * 100)) + '%';
+  }
+
+  function decorateGrid(){
+    const seen = firstSeenMap((shows || []).map(s => normalizePath(s.dir || '')));
+    const byDir = new Map();
+    (filtered || []).forEach(s => byDir.set(normalizePath(s.dir || ''), s));
+    const byPath = storeByPath();
+    gridEl.querySelectorAll('.media-card').forEach(card => {
+      const dir = card.dataset.dir || '';
+      const show = byDir.get(dir);
+      const thumb = card.querySelector('.thumb-wrapper');
+      if(!show || !thumb) return;
+      if(isNew(seen[dir]) && !thumb.querySelector('.kn-new')){
+        const b = el('span', 'kn-new');
+        b.textContent = 'New';
+        thumb.appendChild(b);
+      }
+      setBar(thumb, showFrac(show, byPath));
+      if(!card.querySelector('.kn-title')){
+        const t = el('div', 'kn-title');
+        t.setAttribute('data-no-i18n', '');
+        t.textContent = show.name || '';
+        card.appendChild(t);
+      }
+      card.tabIndex = 0;
+      card.setAttribute('role', 'button');
+    });
+  }
+
+  /* applyThemeFlag paints old hardcoded colors inline (and overrides --bg/--text/--muted
+     on <html>). Let it run, then hand those surfaces back to the theme tokens. */
+  function clr(node, props){ if(node) props.forEach(p => { node.style[p] = ''; }); }
+  function undoInlineTheme(){
+    const root = document.documentElement.style;
+    ['--bg', '--text', '--muted'].forEach(p => root.removeProperty(p));
+    clr(document.getElementById('searchInput'), ['background', 'color', 'borderColor']);
+    clr(document.querySelector('.toolbar'), ['background', 'borderBottomColor']);
+    document.querySelectorAll('.media-card').forEach(n => clr(n, ['background', 'boxShadow']));
+    document.querySelectorAll('.thumb-wrapper').forEach(n => clr(n, ['background']));
+    document.querySelectorAll('.fallback-text').forEach(n => clr(n, ['color']));
+    document.querySelectorAll('.media-thumb').forEach(n => clr(n, ['outline']));
+    document.querySelectorAll('.episode-modal-content').forEach(n => clr(n, ['background', 'color', 'border', 'boxShadow']));
+    document.querySelectorAll('.episode-list').forEach(n => clr(n, ['background', 'color', 'borderRadius', 'border']));
+    document.querySelectorAll('.episode-list .ep-row').forEach(n => clr(n, ['background', 'borderBottom']));
+    document.querySelectorAll('.episode-list .ep-row button').forEach(n => clr(n, ['background', 'color', 'border']));
+    clr(document.getElementById('episodeResumeBanner'), ['background', 'color']);
+  }
+  const _applyThemeFlag = applyThemeFlag;
+  applyThemeFlag = function(){
+    const out = _applyThemeFlag.apply(this, arguments);
+    try { undoInlineTheme(); } catch(e){}
+    return out;
+  };
+
+  // grid: decorate after every render
+  const _renderGrid = renderGrid;
+  renderGrid = function(){
+    const out = _renderGrid.apply(this, arguments);
+    try { decorateGrid(); } catch(e){ console.warn('[khan] grid decorate failed', e); }
+    return out;
+  };
+
+  // the old marquee badge becomes the progress bar (called while playing and on next/ended)
+  const _updateShowBadge = updateShowBadge;
+  updateShowBadge = function(showDir){
+    const out = _updateShowBadge.apply(this, arguments);
+    try {
+      const dir = normalizePath(showDir || '');
+      const card = Array.from(gridEl.querySelectorAll('.media-card')).find(c => (c.dataset.dir || '') === dir);
+      const show = shows.find(s => normalizePath(s.dir || '') === dir);
+      if(card && show) setBar(card.querySelector('.thumb-wrapper'), showFrac(show, storeByPath()));
+    } catch(e){}
+    return out;
+  };
+
+  // posters are focusable, Enter or Space opens the episode sheet
+  gridEl.addEventListener('keydown', (e) => {
+    if((e.key === 'Enter' || e.key === ' ') && e.target.classList && e.target.classList.contains('media-card')){
+      e.preventDefault();
+      e.target.click();
+    }
+  });
+
+  /* ---- sheets ---- */
+  const minutes = (sec) => Math.max(1, Math.round(sec / 60));
+  function fmtSize(bytes){
+    const gb = bytes / 1073741824;
+    if(gb >= 1) return (gb >= 10 ? Math.round(gb) : gb.toFixed(1)) + ' GB';
+    return Math.max(1, Math.round(bytes / 1048576)) + ' MB';
+  }
+  function fillThumb(box, show){
+    box.innerHTML = '';
+    if(show && show.cover){
+      const img = el('img');
+      img.alt = '';
+      img.onerror = () => { box.innerHTML = TV_SVG; };
+      img.src = `${MEDIA_ENDPOINT}?file=${encodeURIComponent(show.cover)}`;
+      box.appendChild(img);
+    } else {
+      box.innerHTML = TV_SVG;
+    }
+  }
+  function addMeta(box, txt, cls){
+    const s = el('span', cls);
+    s.textContent = txt;
+    box.appendChild(s);
+  }
+
+  document.getElementById('knEpisodeHandle').addEventListener('click', () => closeEpisodeModal());
+  document.getElementById('knActionHandle').addEventListener('click', () => closeActionModal());
+
+  // episode rows: the list is built in show.entries order, so walk both together
+  function decorateRow(row, ep, byPath){
+    const btn = row && row.querySelector('button');
+    if(!btn || !ep) return;
+    if(btn.dataset.knName === undefined) btn.dataset.knName = btn.textContent;
+    const st = epState(byPath.get(normalizePath(ep.path || '')));
+    btn.textContent = '';
+    const line = el('span', 'kn-ep-line');
+    const name = el('span', 'kn-ep-name');
+    name.setAttribute('data-no-i18n', '');
+    name.textContent = btn.dataset.knName;
+    line.appendChild(name);
+    if(st.started){
+      const left = el('span', 'kn-ep-left');
+      left.textContent = minutes(st.dur - st.pos) + ' min left';
+      line.appendChild(left);
+    } else if(st.done){
+      const ok = el('span', 'kn-ep-done');
+      ok.innerHTML = CHECK_SVG;
+      line.appendChild(ok);
+    }
+    btn.appendChild(line);
+    if(st.started || st.done){
+      const bar = el('span', 'kn-ep-bar');
+      bar.setAttribute('aria-hidden', 'true');
+      const fill = document.createElement('i');
+      fill.style.width = (st.done ? 100 : Math.max(3, Math.round(st.pos / st.dur * 100))) + '%';
+      bar.appendChild(fill);
+      btn.appendChild(bar);
+    }
+    row.classList.toggle('kn-ep-done-row', st.done);
+  }
+  function decorateEpisodeList(show){
+    const entries = (show && show.entries) || [];
+    const kids = Array.from(episodeList.children);
+    if(!entries.length || kids.length !== entries.length) return;
+    const byPath = storeByPath();
+    entries.forEach((en, i) => {
+      const node = kids[i];
+      if(en.type === 'f'){
+        decorateRow(node, en, byPath);
+      } else if(en.type === 'd'){
+        const rows = node.querySelectorAll('.ep-row');
+        (en.children || []).forEach((c, j) => decorateRow(rows[j], c, byPath));
+      }
+    });
+  }
+
+  const episodeThumb = document.getElementById('knEpisodeThumb');
+  const episodeMeta = document.getElementById('knEpisodeMeta');
+  function fillEpisodeSheet(show){
+    fillThumb(episodeThumb, show);
+    episodeMeta.innerHTML = '';
+    const n = (show && show.episodes && show.episodes.length) || 0;
+    if(n) addMeta(episodeMeta, n === 1 ? '1 episode' : n + ' episodes');
+    decorateEpisodeList(show);
+  }
+  const _openEpisodeModal = openEpisodeModal;
+  openEpisodeModal = function(show){
+    const out = _openEpisodeModal.apply(this, arguments);
+    try { fillEpisodeSheet(show); } catch(e){ console.warn('[khan] episode sheet failed', e); }
+    return out;
+  };
+
+  // refresh row progress after watching, if the picker is still open underneath
+  const _closeVideo = closeVideo;
+  closeVideo = function(){
+    const out = _closeVideo.apply(this, arguments);
+    try { if(episodeModal.style.display === 'flex' && currentShow) decorateEpisodeList(currentShow); } catch(e){}
+    return out;
+  };
+
+  const resumeBtn = document.getElementById('knResumeButton');
+  const actionThumb = document.getElementById('knActionThumb');
+  const actionMeta = document.getElementById('knActionMeta');
+  function fillActionSheet(ep){
+    fillThumb(actionThumb, currentShow);
+    actionMeta.innerHTML = '';
+    if(!ep) return;
+    if(ep.sz > 0) addMeta(actionMeta, fmtSize(ep.sz));
+    const st = epState(storeByPath().get(normalizePath(ep.path || '')));
+    if((st.started || st.done) && st.dur > 0) addMeta(actionMeta, minutes(st.dur) + ' min');
+    if(st.started) addMeta(actionMeta, minutes(st.dur - st.pos) + ' min left', 'kn-left');
+
+    if(st.started){
+      resumeBtn.style.display = '';
+      resumeBtn.textContent = 'Resume';
+      resumeBtn.onclick = () => {
+        closeActionModal();
+        openVideo(fileUrl(ep.path), true, ep);
+        const sd = findShowDirForEpisodePath(ep.path);
+        if(sd) updateShowBadge(sd);
+      };
+      playButton.textContent = 'From start';
+      playButton.className = 'kn-outline';
+    } else {
+      resumeBtn.style.display = 'none';
+      resumeBtn.onclick = null;
+      playButton.textContent = 'Play';
+      playButton.className = 'kn-primary';
+    }
+  }
+  const _openActionModalForEpisode = openActionModalForEpisode;
+  openActionModalForEpisode = function(){
+    const out = _openActionModalForEpisode.apply(this, arguments);
+    try { fillActionSheet(currentEpisode); } catch(e){ console.warn('[khan] action sheet failed', e); }
+    return out;
+  };
+
+  // the first theme pass and maybe a render already ran before this script
+  try { undoInlineTheme(); } catch(e){}
+  try { if(gridEl.querySelector('.media-card')) decorateGrid(); } catch(e){}
+})();
 </script>
 
 </body>

@@ -195,6 +195,71 @@
   body.dark .back-btn { background: var(--white-alpha-12); color: var(--color-white); }
   body.dark .view-btn.active { border-color: var(--primary); }
 </style>
+<link rel="stylesheet" href="/khan-pages.css">
+<style id="khan-page">
+  /* ---- Khan-Nomad movies: poster grid ---- */
+  main{padding:14px 16px 24px}
+  .media-grid{gap:18px 12px}
+  @media (max-width:600px){
+    main{padding:12px 12px 24px}
+    .media-grid{gap:14px 10px}
+    /* compact = more posters per row, gallery = fewer (3 per row is the default) */
+    .media-grid.small  {grid-template-columns:repeat(4,minmax(0,1fr));}
+    .media-grid.medium {grid-template-columns:repeat(3,minmax(0,1fr));}
+    .media-grid.large  {grid-template-columns:repeat(2,minmax(0,1fr));}
+    .media-grid .media-card{max-width:none}
+  }
+  .media-card{background:transparent !important;box-shadow:none !important;border-radius:0;overflow:visible;outline:none}
+  .media-card:hover{transform:none;box-shadow:none !important}
+  .media-grid .media-card .thumb-wrapper{border-radius:10px;overflow:hidden;background:var(--kn-sand);transition:transform .2s ease, box-shadow .2s ease}
+  @media (hover:hover){
+    .media-card:hover .thumb-wrapper{transform:translateY(-3px);box-shadow:0 8px 18px rgba(27,58,75,.18)}
+  }
+  .media-card:active .thumb-wrapper{transform:scale(.98)}
+  .media-card:focus-visible .thumb-wrapper{box-shadow:0 0 0 3px var(--kn-terracotta)}
+  .media-card .fallback-text{color:var(--text);font-family:var(--kn-serif);font-weight:600;font-size:.85rem;line-height:1.25;padding:8px}
+  .media-card .badge-resume{display:none !important}
+  .kn-title{margin-top:7px;padding:0 2px;font-size:.8rem;font-weight:600;line-height:1.25;color:var(--text);text-align:left;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
+  .media-grid.small .kn-title{font-size:.72rem}
+  .media-grid.large .kn-title{font-size:.9rem}
+  /* watched fraction along the poster's bottom edge */
+  .kn-progress{position:absolute;left:0;right:0;bottom:0;height:3px;background:rgba(0,0,0,.35);z-index:5;pointer-events:none}
+  .kn-progress i{display:block;height:100%;background:var(--kn-terracotta)}
+  /* first seen on this device in the last 3 days */
+  .kn-new{position:absolute;top:6px;left:6px;z-index:5;background:var(--kn-terracotta);color:#fff;font-size:10px;font-weight:700;line-height:1;padding:4px 7px;border-radius:999px;letter-spacing:.02em;pointer-events:none;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+  body.dark .kn-new{color:#24140C}
+
+  /* ---- action modal as a bottom sheet ---- */
+  #modal.kn-sheet{align-items:flex-end;justify-content:center;padding:0;background:rgba(15,34,48,.48);animation:knFade .2s ease both}
+  #modal.kn-sheet > .modal-content{position:relative;width:100%;max-width:520px;margin:0 auto;border:0;border-radius:18px 18px 0 0;padding:6px 18px calc(14px + env(safe-area-inset-bottom, 0px));text-align:left;gap:14px;box-shadow:0 -10px 30px rgba(0,0,0,.18);max-height:88vh;overflow:auto;background:var(--card-bg);color:var(--text);animation:knSheetUp .28s cubic-bezier(.2,.9,.2,1) both}
+  #modal .kn-handle{display:block;width:64px;height:20px;margin:0 auto -4px;padding:0;border:0;background:transparent;cursor:pointer;flex:none}
+  #modal .kn-handle::before{content:"";display:block;width:36px;height:4px;margin:0 auto;border-radius:2px;background:var(--kn-line)}
+  #modal .kn-vh{position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .kn-sheet-head{display:flex;gap:14px;align-items:center}
+  .kn-sheet-thumb{flex:none;width:64px;aspect-ratio:2/3;border-radius:8px;overflow:hidden;background:var(--kn-sand);color:var(--muted);display:flex;align-items:center;justify-content:center}
+  .kn-sheet-thumb img{display:block;width:100%;height:100%;object-fit:cover}
+  .kn-sheet-info{flex:1;min-width:0}
+  #modalSub.kn-sheet-title{font-family:var(--kn-serif);font-size:1.2rem;font-weight:600;line-height:1.25;color:var(--text);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
+  .kn-sheet-meta{margin-top:5px;font-size:.85rem;color:var(--muted);display:flex;flex-wrap:wrap;gap:2px 0}
+  .kn-sheet-meta span + span::before{content:"\00B7";margin:0 6px;color:var(--muted);font-weight:400}
+  .kn-sheet-meta .kn-left{color:var(--kn-terracotta);font-weight:600}
+  #modal .kn-actions{display:flex;gap:10px;align-items:stretch}
+  #modal .kn-actions button{flex:1 1 0;width:auto;min-width:0;min-height:46px;margin:0;padding:10px 12px;border-radius:12px;font-size:.95rem;font-weight:700;cursor:pointer;transition:filter .15s ease, background-color .15s ease}
+  #modal .kn-actions .kn-primary{background:var(--kn-terracotta);color:#fff;border:1px solid var(--kn-terracotta)}
+  body.dark #modal .kn-actions .kn-primary{color:#24140C}
+  #modal .kn-actions .kn-outline{background:transparent;color:var(--text);border:1.5px solid var(--kn-line)}
+  #modal .kn-actions .kn-icon{flex:0 0 46px;width:46px;padding:0;display:inline-flex;align-items:center;justify-content:center;background:transparent;color:var(--text);border:1.5px solid var(--kn-line)}
+  #modal .kn-actions button:hover{filter:brightness(.95)}
+  #modal .kn-actions button:focus-visible, #modal .kn-cancel:focus-visible, #modal .kn-handle:focus-visible{outline:2px solid var(--kn-terracotta);outline-offset:2px}
+  #modal .kn-cancel{width:100%;margin:-4px 0 0;padding:8px;border:0;background:transparent;color:var(--muted);font-size:.9rem;font-weight:600;cursor:pointer}
+  @keyframes knSheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+  @keyframes knFade{from{opacity:0}to{opacity:1}}
+  @media (prefers-reduced-motion: reduce){
+    #modal.kn-sheet, #modal.kn-sheet > .modal-content{animation:none}
+    .media-card .thumb-wrapper{transition:none}
+    .media-card:hover .thumb-wrapper, .media-card:active .thumb-wrapper{transform:none}
+  }
+</style>
 <script src="/i18n.js"></script>
 </head>
 <body data-page="movies">
@@ -220,15 +285,23 @@
     </div>
   </main>
 
-  <div id="modal" class="modal" onclick="if(event.target===this) closeModal();">
-    <div class="modal-content" onclick="event.stopPropagation()">
-      <h2 id="modalTitle">What would you like to do?</h2>
-      <div id="modalSub"></div>
-
-      <button id="playButton">Play from Start</button>
-      <button id="resumeButton" class="secondary" style="display:none">Resume</button>
-      <button id="downloadButton" class="cancel" data-dl>Download</button>
-      <button onclick="closeModal()" class="cancel">Cancel</button>
+  <div id="modal" class="modal kn-sheet" onclick="if(event.target===this) closeModal();">
+    <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modalSub" onclick="event.stopPropagation()">
+      <button type="button" class="kn-handle" aria-label="Close" onclick="closeModal()"></button>
+      <h2 id="modalTitle" class="kn-vh">What would you like to do?</h2>
+      <div class="kn-sheet-head">
+        <div id="knSheetThumb" class="kn-sheet-thumb" aria-hidden="true"></div>
+        <div class="kn-sheet-info">
+          <div id="modalSub" class="kn-sheet-title" data-no-i18n></div>
+          <div id="knSheetMeta" class="kn-sheet-meta"></div>
+        </div>
+      </div>
+      <div class="kn-actions">
+        <button id="resumeButton" class="kn-primary" style="display:none">Resume</button>
+        <button id="playButton" class="kn-primary">Play</button>
+        <button id="downloadButton" class="kn-icon" data-dl aria-label="Download" title="Download"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg></button>
+      </div>
+      <button type="button" onclick="closeModal()" class="kn-cancel">Cancel</button>
     </div>
   </div>
 
@@ -1203,6 +1276,169 @@ window.addEventListener('hashchange', ()=> handleHashNavigation(getHashParam()))
 
 /* admin toggle: hide the download action when downloads are disabled */
 NomadUI.applyDownloadPolicy('downloadButton');
+</script>
+
+<script>
+/* Khan-Nomad movies page: poster titles, watch progress bars, "New" badges and the
+   bottom-sheet action modal. Hooks the functions above instead of rewriting them. */
+(function(){
+  const NEW_MS = 3 * 24 * 60 * 60 * 1000;   // an item stays "New" for 3 days after first seen
+  const SEEN_KEY = 'kn:firstSeen:movies';
+  const FILM_SVG = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 4v16M17 4v16M3 9h4M3 15h4M17 9h4M17 15h4"/></svg>';
+  const has = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
+
+  /* path -> first-seen timestamp. The very first visit records everything with 0,
+     so an existing library does not light up as new. */
+  function firstSeenMap(keys){
+    let map = null;
+    try { map = JSON.parse(localStorage.getItem(SEEN_KEY) || 'null'); } catch(e){ map = null; }
+    const fresh = !map || typeof map !== 'object' || Array.isArray(map);
+    if(fresh) map = {};
+    if(!keys.length) return map;           // nothing loaded yet, do not lock in an empty map
+    const now = Date.now();
+    let changed = fresh;
+    for(const k of keys){
+      if(k && !has(map, k)){ map[k] = fresh ? 0 : now; changed = true; }
+    }
+    if(changed){ try { localStorage.setItem(SEEN_KEY, JSON.stringify(map)); } catch(e){} }
+    return map;
+  }
+  function isNew(ts){ return typeof ts === 'number' && ts > 0 && (Date.now() - ts) < NEW_MS; }
+
+  function watchInfo(movie){
+    const r = movie ? findResume(movie) : null;
+    const e = r && r.entry;
+    if(!e) return null;
+    const pos = Number(e.position) || 0, dur = Number(e.duration) || 0;
+    return { pos, dur, frac: (pos > 1 && dur > 0) ? Math.min(1, pos / dur) : 0 };
+  }
+
+  function setBar(thumb, frac){
+    if(!thumb) return;
+    let bar = thumb.querySelector('.kn-progress');
+    if(!(frac > 0)){ if(bar) bar.remove(); return; }
+    if(!bar){
+      bar = document.createElement('div');
+      bar.className = 'kn-progress';
+      bar.setAttribute('aria-hidden', 'true');
+      bar.appendChild(document.createElement('i'));
+      thumb.appendChild(bar);
+    }
+    bar.firstChild.style.width = Math.max(3, Math.round(frac * 100)) + '%';
+  }
+
+  function decorateGrid(){
+    const seen = firstSeenMap((movies || []).map(m => m.path));
+    const byPath = new Map();
+    (filtered || []).forEach(m => byPath.set(m.path || '', m));
+    gridEl.querySelectorAll('.media-card').forEach(card => {
+      const m = byPath.get(card.dataset.path || '');
+      const thumb = card.querySelector('.thumb-wrapper');
+      if(!m || !thumb) return;
+      thumb.querySelectorAll('.badge-resume').forEach(b => b.remove());
+      if(isNew(seen[m.path]) && !thumb.querySelector('.kn-new')){
+        const b = document.createElement('span');
+        b.className = 'kn-new';
+        b.textContent = 'New';
+        thumb.appendChild(b);
+      }
+      const w = watchInfo(m);
+      setBar(thumb, w ? w.frac : 0);
+      if(!card.querySelector('.kn-title')){
+        const t = document.createElement('div');
+        t.className = 'kn-title';
+        t.setAttribute('data-no-i18n', '');
+        t.textContent = m.name || m.rawName || '';
+        card.appendChild(t);
+      }
+      card.tabIndex = 0;
+      card.setAttribute('role', 'button');
+    });
+  }
+
+  // grid: decorate after every render
+  const _renderGrid = renderGrid;
+  renderGrid = function(){
+    const out = _renderGrid.apply(this, arguments);
+    try { decorateGrid(); } catch(e){ console.warn('[khan] grid decorate failed', e); }
+    return out;
+  };
+
+  // the old time badge becomes the progress bar (called by saveNow while playing)
+  updateResumeBadge = function(movie){
+    try {
+      if(!movie || !movie.path) return;
+      const card = Array.from(gridEl.querySelectorAll('.media-card')).find(c => c.dataset.path === movie.path);
+      if(!card) return;
+      const w = watchInfo(movie);
+      setBar(card.querySelector('.thumb-wrapper'), w ? w.frac : 0);
+    } catch(e){}
+  };
+
+  // posters are focusable, Enter or Space opens the sheet
+  gridEl.addEventListener('keydown', (e) => {
+    if((e.key === 'Enter' || e.key === ' ') && e.target.classList && e.target.classList.contains('media-card')){
+      e.preventDefault();
+      e.target.click();
+    }
+  });
+
+  /* ---- bottom sheet ---- */
+  const thumbBox = document.getElementById('knSheetThumb');
+  const metaBox = document.getElementById('knSheetMeta');
+
+  function fmtSize(bytes){
+    const gb = bytes / 1073741824;
+    if(gb >= 1) return (gb >= 10 ? Math.round(gb) : gb.toFixed(1)) + ' GB';
+    return Math.max(1, Math.round(bytes / 1048576)) + ' MB';
+  }
+
+  function fillSheet(movie){
+    thumbBox.innerHTML = '';
+    if(movie.cover){
+      const img = document.createElement('img');
+      img.alt = '';
+      img.onerror = () => { thumbBox.innerHTML = FILM_SVG; };
+      img.src = movie.cover;
+      thumbBox.appendChild(img);
+    } else {
+      thumbBox.innerHTML = FILM_SVG;
+    }
+
+    metaBox.innerHTML = '';
+    const add = (txt, cls) => {
+      const s = document.createElement('span');
+      if(cls) s.className = cls;
+      s.textContent = txt;
+      metaBox.appendChild(s);
+    };
+    if(movie.sz > 0) add(fmtSize(movie.sz));
+    const w = watchInfo(movie);
+    if(w && w.dur > 0) add(Math.max(1, Math.round(w.dur / 60)) + ' min');
+    const canResume = !!(w && w.pos > 1);   // same rule showMovieOptions uses for #resumeButton
+    if(canResume && w.dur > w.pos) add(Math.max(1, Math.round((w.dur - w.pos) / 60)) + ' min left', 'kn-left');
+
+    if(canResume){
+      resumeButton.textContent = 'Resume';
+      resumeButton.className = 'kn-primary';
+      playButton.textContent = 'From start';
+      playButton.className = 'kn-outline';
+    } else {
+      playButton.textContent = 'Play';
+      playButton.className = 'kn-primary';
+    }
+  }
+
+  const _showMovieOptions = showMovieOptions;
+  showMovieOptions = function(movie){
+    const out = _showMovieOptions.apply(this, arguments);
+    try { fillSheet(movie); } catch(e){ console.warn('[khan] sheet fill failed', e); }
+    return out;
+  };
+
+  // in case the grid was already drawn before this script ran
+  try { if(gridEl.querySelector('.media-card')) decorateGrid(); } catch(e){}
+})();
 </script>
 </body>
 </html>

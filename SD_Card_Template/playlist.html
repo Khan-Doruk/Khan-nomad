@@ -44,6 +44,56 @@ main{padding:14px;max-width:1100px;margin:0 auto;padding-bottom:20px;}
 .add-queue-btn:hover{background:var(--primary);color:var(--color-white);transform:scale(1.05);}
 .track.playing .add-queue-btn{background:var(--white-alpha-20);color:var(--color-white);border-color:var(--white-alpha-30);}
 </style>
+<link rel="stylesheet" href="/khan-pages.css">
+<style id="khan-page">
+/* Khan-Nomad playlists: flat rows with art, hairline separators */
+main{padding:4px 14px 24px;}
+.toolbar{background:var(--bg);border-bottom:1px solid var(--kn-line);box-shadow:none;}
+.playlist-count{font-weight:600;font-size:0.85rem;}
+.playlists{gap:0;}
+.playlist{background:transparent;border:0;border-radius:0;box-shadow:none;overflow:visible;border-bottom:1px solid var(--kn-line);}
+.playlist:last-child{border-bottom:0;}
+.playlist-header{gap:12px;padding:10px 2px;background:transparent;}
+.playlist-header:hover{background:var(--kn-sand);}
+.playlist-header .name{font-weight:600;font-size:0.97rem;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.playlist-header .count{font-weight:500;font-size:0.8rem;color:var(--muted);}
+.playlist-header .icon{order:9;flex:none;display:inline-flex;color:var(--muted);font-size:0;}
+.playlist-body{padding:0 0 6px 14px;border-top:0;background:transparent;}
+.folder-card{background:transparent;border:0;border-top:1px solid var(--kn-line);border-radius:0;margin:0;overflow:visible;}
+.folder-card.expanded{background:transparent;border-color:var(--kn-line);}
+.folder{gap:12px;padding:9px 2px;font-weight:600;}
+.folder:hover,.folder.expanded{background:transparent;}
+.folder:hover{background:var(--kn-sand);}
+.folder .name{color:var(--text);font-size:0.93rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.folder .meta{font-size:0.8rem;font-weight:500;color:var(--muted);}
+.kn-chev{order:9;flex:none;display:inline-flex;color:var(--muted);transition:transform 0.2s;}
+.folder.expanded .kn-chev{transform:rotate(90deg);}
+.subtracks{padding:0 0 4px 14px;}
+.track{gap:12px;padding:8px 2px;margin:0;border-radius:0;border-top:1px solid var(--kn-line);}
+.track:hover{background:var(--kn-sand);transform:none;}
+.track.playing{background:transparent;color:var(--text);}
+.track.playing:hover{background:var(--kn-sand);}
+.track .track-name{font-weight:600;font-size:0.93rem;color:var(--text);}
+.track.playing .track-name{color:var(--kn-terracotta);}
+.track .meta{font-size:0.8rem;font-weight:500;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.track.playing .meta{color:var(--muted);}
+.kn-meta{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:1px;}
+.kn-meta .meta{padding:0;text-align:left;}
+.kn-meta .meta:empty{display:none;}
+.kn-art{position:relative;flex:none;width:36px;height:36px;border-radius:6px;overflow:hidden;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.88);}
+.kn-art img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+.add-queue-btn{flex:none;width:30px;height:30px;padding:0;border-radius:50%;border:1px solid var(--kn-line);background:var(--card-bg);color:var(--primary);font-size:1rem;line-height:1;display:inline-flex;align-items:center;justify-content:center;}
+.add-queue-btn:hover{background:var(--primary);border-color:var(--primary);color:var(--color-white);transform:none;}
+.track.playing .add-queue-btn{background:var(--card-bg);color:var(--primary);border-color:var(--kn-line);}
+.kn-eq{display:none;flex:none;color:var(--kn-terracotta);}
+.track.playing .kn-eq{display:block;}
+.kn-eq rect{transform-box:fill-box;transform-origin:50% 100%;animation:kn-eq 0.9s ease-in-out infinite;}
+.kn-eq rect:nth-child(2){animation-delay:-0.3s;}
+.kn-eq rect:nth-child(3){animation-delay:-0.6s;}
+body.kn-paused .kn-eq rect{animation-play-state:paused;}
+@keyframes kn-eq{0%,100%{transform:scaleY(0.35);}50%{transform:scaleY(1);}}
+@media (prefers-reduced-motion:reduce){.kn-eq rect{animation:none;}}
+</style>
 <script src="/i18n.js"></script>
 </head>
 <body>
@@ -573,6 +623,109 @@ window.addEventListener('message', (event) => {
 });
 
 scanLibrary();
+</script>
+<script>
+/* Khan-Nomad playlists: art squares, chevrons, playing highlight.
+ * Album art comes from the songs tab (it already knows every image in /Music). */
+(function(){
+  const PALETTE = ['#D97B4A','#234B61','#C8553D','#B9612F','#7A6F60','#1B3A4B'];
+  const NOTE_SVG = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>';
+  const EQ_SVG = '<svg class="kn-eq" viewBox="0 0 16 16" width="16" height="16" fill="currentColor" aria-hidden="true"><rect x="2" y="3" width="3" height="11" rx="1"></rect><rect x="6.5" y="3" width="3" height="11" rx="1"></rect><rect x="11" y="3" width="3" height="11" rx="1"></rect></svg>';
+  const CHEV_SVG = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg>';
+
+  function songsWin(){
+    try {
+      if(window.parent === window) return null;
+      const f = window.parent.document.getElementById('songsFrame');
+      return f ? f.contentWindow : null;
+    } catch(e){ return null; }
+  }
+  function trackArt(p){ const w = songsWin(); return (w && w.knArtUrl) ? w.knArtUrl(p) : null; }
+  function dirArt(d){ const w = songsWin(); return (w && w.knDirArtUrl) ? w.knDirArtUrl(d) : null; }
+  function lastSeg(p){ return String(p || '').split('/').filter(Boolean).pop() || 'Music'; }
+  function dirOf(p){ const n = normalizePath(p || ''); return n.slice(0, n.lastIndexOf('/')) || '/'; }
+  function color(name){
+    let h = 5381; name = String(name || '');
+    for(let i = 0; i < name.length; i++) h = ((h << 5) + h + name.charCodeAt(i)) | 0;
+    return PALETTE[Math.abs(h) % PALETTE.length];
+  }
+  function fromHtml(html){ const t = document.createElement('div'); t.innerHTML = html; return t.firstChild; }
+  const artTpl = document.createElement('div');
+  artTpl.className = 'kn-art';
+  artTpl.setAttribute('aria-hidden', 'true');
+  artTpl.innerHTML = NOTE_SVG;
+  const eqNode = fromHtml(EQ_SVG);
+  const chevNode = fromHtml('<span class="kn-chev">' + CHEV_SVG + '</span>');
+
+  function artEl(url, colorKey){
+    const d = artTpl.cloneNode(true);
+    d.style.backgroundColor = color(colorKey);
+    if(url){
+      const img = document.createElement('img');
+      img.loading = 'lazy';
+      img.decoding = 'async';
+      img.alt = '';
+      img.onerror = function(){ this.remove(); };
+      img.src = url;
+      d.appendChild(img);
+    }
+    return d;
+  }
+  // wrap the name and its muted line into one column, art in front
+  function wrapMeta(el, nameEl, subEl, art){
+    const meta = document.createElement('div');
+    meta.className = 'kn-meta';
+    if(nameEl){ el.insertBefore(meta, nameEl); meta.appendChild(nameEl); }
+    else el.appendChild(meta);
+    if(subEl) meta.appendChild(subEl);
+    el.insertBefore(art, el.firstChild);
+  }
+
+  function decorate(){
+    playlistsEl.querySelectorAll('.playlist-header:not([data-kn])').forEach(h => {
+      h.setAttribute('data-kn', '');
+      const path = h.dataset.path;
+      const first = gatherRecursive(path)[0];
+      const url = dirArt(path) || (first ? trackArt(first.path) : null);
+      wrapMeta(h, h.querySelector('.name'), h.querySelector('.count'), artEl(url, lastSeg(path)));
+      const icon = h.querySelector('.icon');
+      if(icon) icon.innerHTML = CHEV_SVG;
+    });
+    playlistsEl.querySelectorAll('.folder:not([data-kn])').forEach(f => {
+      f.setAttribute('data-kn', '');
+      const path = f.dataset.path;
+      const first = gatherDirect(path)[0];
+      const url = dirArt(path) || (first ? trackArt(first.path) : null);
+      wrapMeta(f, f.querySelector('.name'), f.querySelector('.meta'), artEl(url, lastSeg(path)));
+      f.appendChild(chevNode.cloneNode(true));
+    });
+    playlistsEl.querySelectorAll('.track:not([data-kn])').forEach(t => {
+      t.setAttribute('data-kn', '');
+      const path = t.dataset.path;
+      const album = lastSeg(dirOf(path));
+      const sub = t.querySelector('.meta');
+      if(sub && !sub.textContent) sub.textContent = album;
+      wrapMeta(t, t.querySelector('.track-name'), sub, artEl(trackArt(path), album));
+      t.insertBefore(eqNode.cloneNode(true), t.querySelector('.add-queue-btn'));
+    });
+  }
+
+  const origRender = render;
+  render = function(){
+    const r = origRender.apply(this, arguments);
+    decorate();
+    return r;
+  };
+
+  window.addEventListener('message', (event) => {
+    const d = event.data || {};
+    if(d.type === 'PLAYBACK_UPDATE' && d.payload){
+      document.body.classList.toggle('kn-paused', !d.payload.playing);
+    } else if(d.type === 'KN_ART_READY'){
+      render();
+    }
+  });
+})();
 </script>
 </body>
 </html>
