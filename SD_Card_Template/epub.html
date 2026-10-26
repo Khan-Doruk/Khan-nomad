@@ -97,51 +97,8 @@
             display: flex;
             flex-direction: column;
             height: 100vh;
+            height: 100dvh;
             width: 100%;
-        }
-
-        .reader-header {
-            background: var(--header-bg, var(--primary));
-            color: var(--header-text);
-            padding: 12px 16px;
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            flex-wrap: wrap;
-            box-shadow: var(--shadow);
-            z-index: 100;
-        }
-
-        .reader-title {
-            font-size: 1rem;
-            font-weight: 700;
-            margin-right: auto;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .reader-controls {
-            display: flex;
-            gap: 6px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .reader-btn {
-            background: rgba(255,255,255,0.2);
-            border: none;
-            color: #fff;
-            padding: 8px 12px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: background 0.2s ease;
-            white-space: nowrap;
-        }
-
-        .reader-btn:hover {
-            background: rgba(255,255,255,0.3);
         }
 
         .reader-main {
@@ -155,7 +112,6 @@
         #epub-viewer {
             flex: 1;
             overflow: hidden;
-            background: #fafafa;
             position: relative;
             min-width: 0;
             min-height: 0;
@@ -173,7 +129,6 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            background: rgba(250, 250, 250, 0.95);
             z-index: 50;
             gap: 15px;
         }
@@ -182,111 +137,8 @@
             display: none;
         }
 
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(0, 123, 255, 0.2);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
         @keyframes spin {
             to { transform: rotate(360deg); }
-        }
-
-        .reader-navigation {
-            background: #f5f5f5;
-            padding: 12px;
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            align-items: center;
-            border-top: 1px solid #ddd;
-            flex-wrap: wrap;
-        }
-
-        .nav-btn {
-            background: var(--primary);
-            color: #fff;
-            border: none;
-            padding: 8px 14px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.95em;
-            transition: background 0.2s ease;
-        }
-
-        .nav-btn:hover {
-            background: var(--primary-dark);
-        }
-
-        .nav-btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-
-        .progress-info {
-            color: #333;
-            font-weight: 600;
-            min-width: 60px;
-            text-align: center;
-        }
-
-        .toc-panel {
-            position: absolute;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            width: var(--reader-sidebar-width);
-            max-width: 80%;
-            background: #fff;
-            border-left: 1px solid #e5e7eb;
-            transform: translateX(100%);
-            transition: transform .25s ease;
-            z-index: 60;
-            display: flex;
-            flex-direction: column;
-            box-shadow: -8px 0 20px rgba(0,0,0,0.08);
-        }
-
-        .toc-panel.open {
-            transform: translateX(0%);
-        }
-
-        .toc-header {
-            padding: 10px 12px;
-            font-weight: 700;
-            border-bottom: 1px solid #e5e7eb;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: #fff;
-        }
-
-        .toc-content {
-            padding: 8px 6px;
-            overflow: auto;
-            flex: 1;
-        }
-
-        .toc-item {
-            display: block;
-            padding: 8px 10px;
-            border-radius: 6px;
-            cursor: pointer;
-            color: #0f1720;
-            text-decoration: none;
-            font-size: 0.95rem;
-            transition: background 0.2s ease;
-        }
-
-        .toc-item:hover {
-            background: #eef3ff;
-        }
-
-        .toc-sub {
-            padding-left: 16px;
         }
 
         .error-message {
@@ -295,42 +147,257 @@
             color: #d32f2f;
             font-size: 1rem;
         }
-
-        @media (max-width: 768px) {
-            .reader-header {
-                padding: 10px 12px;
-            }
-
-            .reader-title {
-                flex: 1 1 100%;
-                margin-bottom: 4px;
-            }
-
-            .reader-controls {
-                width: 100%;
-                justify-content: flex-start;
-            }
-
-            .reader-btn {
-                font-size: 0.85rem;
-                padding: 6px 10px;
-            }
-        }
     </style>
     <script src="theme-manager.js"></script>
     <script src="/nomad-utils.js"></script>
+<link rel="stylesheet" href="/khan-pages.css">
+<style id="khan-page">
+/* Khan-Nomad EPUB reader: teal top bar with the kilim band, cream paper,
+   round controls, a thin terracotta progress line and the contents as a bottom sheet. */
+
+/* ---- top bar ---- */
+.reader-header {
+  position: relative;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px 13px;          /* the last 7px is the kilim band */
+  background: var(--header-bg, var(--primary));
+  color: var(--kn-cream);
+  box-shadow: none;
+}
+body.dark .reader-header { background: var(--header-bg, var(--primary)); }  /* master.css paints it --primary (terracotta) in dark */
+.reader-header::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 7px;
+  pointer-events: none;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='7'%3E%3Crect width='16' height='7' fill='%23C8553D'/%3E%3Cpath d='M8 .5l3 3-3 3-3-3z' fill='%23EBD9B4'/%3E%3Cpath d='M0 .5l3 3-3 3M16 .5l-3 3 3 3' fill='%231B3A4B'/%3E%3C/svg%3E") repeat-x;
+}
+.reader-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0 4px;
+  font-family: var(--kn-serif);
+  font-weight: 600;
+  font-size: 1.12rem;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.reader-controls {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ---- round icon buttons and pills ---- */
+.kn-round, .kn-pill {
+  flex: none;
+  height: 40px;
+  border: none;
+  border-radius: 999px;
+  background: rgba(244, 233, 212, 0.14);
+  color: var(--kn-cream);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  text-decoration: none;
+  font: inherit;
+  -webkit-tap-highlight-color: transparent;
+  transition: background .15s ease, opacity .15s ease;
+}
+.kn-round { width: 40px; padding: 0; }
+.kn-pill { padding: 0 14px; font-size: .85rem; font-weight: 600; white-space: nowrap; }
+.kn-round:hover, .kn-pill:hover { background: rgba(244, 233, 212, 0.24); }
+.kn-round:focus-visible, .kn-pill:focus-visible { outline: 2px solid var(--kn-cream); outline-offset: 2px; }
+.kn-round svg { width: 20px; height: 20px; flex: none; }
+.kn-round:disabled { opacity: .4; cursor: default; }
+.kn-a { font-family: var(--kn-serif); font-weight: 600; line-height: 1; }
+.kn-a-sm { font-size: .85rem; }
+.kn-a-lg { font-size: 1.25rem; }
+@media (max-width: 360px) {
+  .reader-controls { gap: 2px; }
+  .kn-pill { padding: 0 10px; }
+}
+
+/* ---- the page ---- */
+body #epub-viewer { background: #FFFDF8; }
+body.dark #epub-viewer { background: #0F2230; }
+.loading-overlay { background: rgba(255, 253, 248, 0.96); color: var(--text); }
+body.dark .loading-overlay { background: rgba(15, 34, 48, 0.96); }
+.loading-text { font-size: .95rem; color: var(--muted); }
+.spinner {
+  width: 44px;
+  height: 44px;
+  border: 4px solid var(--kn-terracotta-soft);
+  border-top-color: var(--kn-terracotta);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+/* ---- bottom bar: prev, progress, next ---- */
+.reader-navigation {
+  position: relative;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  padding: 8px 12px;
+  background: var(--card-bg);
+  border-top: 1px solid var(--kn-line);
+}
+.reader-navigation .kn-round { background: var(--kn-teal-soft); color: var(--kn-teal); }
+.reader-navigation .kn-round:hover { background: var(--kn-sand); }
+.reader-navigation .kn-round:focus-visible { outline-color: var(--kn-terracotta); }
+body.dark .reader-navigation .kn-round { background: rgba(244, 233, 212, 0.10); color: var(--kn-cream); }
+body.dark .reader-navigation .kn-round:hover { background: rgba(244, 233, 212, 0.18); }
+.progress-info {
+  min-width: 64px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--kn-sand);
+  color: var(--text);
+  font-size: .85rem;
+  font-weight: 600;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.kn-progress {
+  position: absolute;
+  left: 0; right: 0; top: -1px;
+  height: 3px;
+  background: transparent;
+  pointer-events: none;
+}
+.kn-progress-fill {
+  height: 100%;
+  width: 0;
+  background: var(--kn-terracotta);
+  border-radius: 0 2px 2px 0;
+  transition: width .3s ease;
+}
+
+/* ---- table of contents: bottom sheet ---- */
+.toc-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 190;
+  background: rgba(10, 20, 28, 0.45);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .25s ease, visibility 0s linear .25s;
+}
+.toc-panel.open ~ .toc-backdrop { opacity: 1; visibility: visible; transition: opacity .25s ease; }
+.toc-panel {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  z-index: 200;
+  width: 100%;
+  max-width: 560px;
+  max-height: 78vh;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  background: var(--card-bg);
+  color: var(--text);
+  border: 1px solid var(--kn-line);
+  border-bottom: 0;
+  border-radius: 18px 18px 0 0;
+  box-shadow: 0 -12px 32px rgba(0, 0, 0, 0.2);
+  transform: translateY(100%);
+  visibility: hidden;
+  transition: transform .28s cubic-bezier(.22, .9, .32, 1), visibility 0s linear .28s;
+}
+.toc-panel.open { transform: translateY(0); visibility: visible; transition: transform .28s cubic-bezier(.22, .9, .32, 1); }
+.toc-handle {
+  flex: none;
+  width: 36px;
+  height: 4px;
+  margin: 8px auto 0;
+  border-radius: 2px;
+  background: var(--kn-line);
+}
+body.dark .toc-handle { background: rgba(244, 233, 212, 0.25); }
+.toc-header {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 6px 12px 8px 20px;
+  border-bottom: 1px solid var(--kn-line);
+  touch-action: none;
+}
+.toc-header span {
+  font-family: var(--kn-serif);
+  font-weight: 600;
+  font-size: 1.2rem;
+}
+.toc-header .kn-round { background: transparent; color: var(--muted); }
+.toc-header .kn-round:hover { background: var(--kn-sand); }
+.toc-content {
+  position: relative;   /* rows measure offsetTop from here */
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 6px 8px 16px;
+  overscroll-behavior: contain;
+}
+.toc-item {
+  position: relative;
+  display: block;
+  padding: 11px 14px;
+  border-radius: 10px;
+  color: var(--text);
+  text-decoration: none;
+  font-size: .97rem;
+  line-height: 1.35;
+  cursor: pointer;
+}
+.toc-item + .toc-item { margin-top: 2px; }
+.toc-item:hover, .toc-item:focus-visible { background: var(--kn-sand); outline: none; }
+.toc-sub { padding-left: 30px; font-size: .9rem; color: var(--muted); }
+.toc-item.current {
+  background: var(--kn-terracotta-soft);
+  color: var(--kn-terracotta);
+  font-weight: 700;
+}
+.toc-item.current::before {
+  content: "";
+  position: absolute;
+  left: 4px; top: 10px; bottom: 10px;
+  width: 3px;
+  border-radius: 2px;
+  background: var(--kn-terracotta);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toc-panel, .toc-panel.open, .toc-backdrop, .toc-panel.open ~ .toc-backdrop, .kn-progress-fill { transition: none; }
+}
+</style>
 <script src="/i18n.js"></script>
 </head>
 <body>
     <div class="reader-container">
         <div class="reader-header">
+            <a class="kn-round" href="/books" title="Back to Books" aria-label="Back to Books">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>
+            </a>
             <div class="reader-title" id="readerTitle">Loading...</div>
             <div class="reader-controls">
-                <a class="reader-btn" href="/books" title="Back to Books">← Back</a>
-                <button class="reader-btn" id="tocBtn" title="Table of Contents">📑 TOC</button>
-                <button class="reader-btn" id="viewModeBtn" title="Toggle view mode">Pages</button>
-                <button class="reader-btn" id="fontSizeDown" title="Decrease font size">A-</button>
-                <button class="reader-btn" id="fontSizeUp" title="Increase font size">A+</button>
+                <button class="kn-round" id="tocBtn" title="Table of Contents" aria-label="Table of Contents" aria-controls="tocPanel" aria-expanded="false">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1" fill="currentColor"/><circle cx="4.5" cy="12" r="1" fill="currentColor"/><circle cx="4.5" cy="18" r="1" fill="currentColor"/></svg>
+                </button>
+                <button class="kn-round" id="fontSizeDown" title="Decrease font size" aria-label="Decrease font size"><span class="kn-a kn-a-sm" aria-hidden="true">A</span></button>
+                <button class="kn-round" id="fontSizeUp" title="Increase font size" aria-label="Increase font size"><span class="kn-a kn-a-lg" aria-hidden="true">A</span></button>
+                <button class="kn-pill" id="viewModeBtn" title="Toggle view mode">Pages</button>
             </div>
         </div>
         <div class="reader-main">
@@ -340,20 +407,28 @@
                 <div class="loading-text">Loading EPUB...</div>
             </div>
         </div>
-            <aside class="toc-panel" id="tocPanel">
-                <div class="toc-header">
-                    <span>Table of Contents</span>
-                    <button class="reader-btn" id="closeToc" title="Close TOC">✕</button>
-                </div>
-                <div class="toc-content" id="tocContent"></div>
-            </aside>
-        </div>
-        <div class="reader-navigation">
-            <button class="nav-btn" id="prevBtn">← Previous</button>
+        <nav class="reader-navigation">
+            <div class="kn-progress" aria-hidden="true"><div class="kn-progress-fill" id="progressFill"></div></div>
+            <button class="kn-round" id="prevBtn" title="Previous" aria-label="Previous">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
             <span class="progress-info" id="progressInfo">0%</span>
-            <button class="nav-btn" id="nextBtn">Next →</button>
-        </div>
+            <button class="kn-round" id="nextBtn" title="Next" aria-label="Next">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+        </nav>
     </div>
+    <aside class="toc-panel" id="tocPanel" role="dialog" aria-label="Table of Contents">
+        <div class="toc-handle" aria-hidden="true"></div>
+        <div class="toc-header" id="tocHeader">
+            <span>Table of Contents</span>
+            <button class="kn-round" id="closeToc" title="Close TOC" aria-label="Close TOC">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+            </button>
+        </div>
+        <div class="toc-content" id="tocContent"></div>
+    </aside>
+    <div class="toc-backdrop" id="tocBackdrop"></div>
 
     <script>
         /* theme via shared ThemeManager instead of a local reimplementation */
@@ -389,6 +464,9 @@
         const fontDownBtn = document.getElementById('fontSizeDown');
         const viewModeBtn = document.getElementById('viewModeBtn');
         const loadingOverlay = document.getElementById('loadingOverlay');
+        const progressFill = document.getElementById('progressFill');
+        const tocBackdrop = document.getElementById('tocBackdrop');
+        const tocHeader = document.getElementById('tocHeader');
 
         let rendition = null;
         let epubBook = null;
@@ -434,21 +512,31 @@
             });
 
             r.themes.fontSize(`${epubFontSize}%`);
-            r.themes.register('dark', {
-                'body': {
-                    'color': '#d0d0d0 !important',
-                    'background': '#0b1220 !important'
+            // epub.js injects theme rules unscoped and leaves old ones in place when the
+            // theme changes, so each palette is keyed on the class it puts on the book's body.
+            // light = cream paper, dark = the Steppe Night teal. The book's own fonts and
+            // colors still win in light mode; dark mode forces readable text.
+            r.themes.register('kn-light', {
+                'body.kn-light': {
+                    'background': '#FFFDF8 !important',
+                    'color': '#2B2A26',
+                    'font-family': 'Georgia, "Iowan Old Style", "Times New Roman", serif'
                 },
-                'p': {
-                    'color': '#d0d0d0 !important'
-                },
-                'a': {
-                    'color': '#4aa3ff !important'
-                }
+                '.kn-light a': { 'color': '#C8553D' }
             });
-            if (document.body.classList.contains('dark')) {
-                r.themes.select('dark');
-            }
+            r.themes.register('kn-dark', {
+                'body.kn-dark': {
+                    'background': '#0F2230 !important',
+                    'color': '#E9DFCB !important',
+                    'font-family': 'Georgia, "Iowan Old Style", "Times New Roman", serif'
+                },
+                '.kn-dark p, .kn-dark li, .kn-dark span, .kn-dark div, .kn-dark blockquote, .kn-dark td, .kn-dark th, .kn-dark h1, .kn-dark h2, .kn-dark h3, .kn-dark h4, .kn-dark h5, .kn-dark h6': {
+                    'color': 'inherit !important'
+                },
+                '.kn-dark a': { 'color': '#D97B4A !important' }
+            });
+            r.knTheme = document.body.classList.contains('dark') ? 'kn-dark' : 'kn-light';
+            r.themes.select(r.knTheme);
 
             r.on('relocated', (location) => {
                 try {
@@ -456,14 +544,24 @@
                         const percent = epubBook.locations.percentageFromCfi(location.start.cfi);
                         const percentRounded = Math.round(percent * 100);
                         progressInfo.textContent = percentRounded + '%';
+                        progressFill.style.width = percentRounded + '%';
                         saveProgress(bookPath, location.start.cfi, percentRounded);
                     } else {
                         progressInfo.textContent = '—';
+                        progressFill.style.width = '0';
                         saveProgress(bookPath, location.start.cfi, 0);
                     }
                 } catch (e) {
                     console.warn('EPUB: Progress tracking error', e);
                 }
+                markCurrentChapter(location);
+            });
+
+            // arrow keys while focus is inside the book's frame (set per rendition so the
+            // view-mode switch keeps them)
+            r.on('keyup', (e) => {
+                if (e.key === 'ArrowLeft') r.prev();
+                else if (e.key === 'ArrowRight') r.next();
             });
 
             return r;
@@ -570,32 +668,13 @@
                     tocContent.innerHTML = '';
                     if (nav.toc && nav.toc.length) {
                         nav.toc.forEach(chapter => {
-                            const link = document.createElement('a');
-                            link.className = 'toc-item';
-                            link.textContent = chapter.label;
-                            link.href = '#';
-                            link.onclick = (e) => {
-                                e.preventDefault();
-                                rendition.display(chapter.href);
-                                tocPanel.classList.remove('open');
-                            };
-                            tocContent.appendChild(link);
-
+                            addTocItem(chapter, false);
                             if (chapter.subitems) {
-                                chapter.subitems.forEach(sub => {
-                                    const subLink = document.createElement('a');
-                                    subLink.className = 'toc-item toc-sub';
-                                    subLink.textContent = sub.label;
-                                    subLink.href = '#';
-                                    subLink.onclick = (e) => {
-                                        e.preventDefault();
-                                        rendition.display(sub.href);
-                                        tocPanel.classList.remove('open');
-                                    };
-                                    tocContent.appendChild(subLink);
-                                });
+                                chapter.subitems.forEach(sub => addTocItem(sub, true));
                             }
                         });
+                        const loc = rendition && rendition.currentLocation();
+                        if (loc && loc.start) markCurrentChapter(loc);
                     } else {
                         tocContent.innerHTML = '<p style="padding:12px;color:var(--muted)">No table of contents available.</p>';
                     }
@@ -607,11 +686,6 @@
                 prevBtn.onclick = () => rendition.prev();
                 nextBtn.onclick = () => rendition.next();
 
-                rendition.on('keyup', (e) => {
-                    if (e.key === 'ArrowLeft') rendition.prev();
-                    else if (e.key === 'ArrowRight') rendition.next();
-                });
-
             } catch (err) {
                 console.error('EPUB load error', err);
                 loadingOverlay.classList.add('hidden');
@@ -619,8 +693,105 @@
             }
         }
 
-        tocBtn.addEventListener('click', () => tocPanel.classList.toggle('open'));
-        closeToc.addEventListener('click', () => tocPanel.classList.remove('open'));
+        // ---- table of contents (bottom sheet) ----
+        function addTocItem(item, isSub) {
+            const link = document.createElement('a');
+            link.className = isSub ? 'toc-item toc-sub' : 'toc-item';
+            link.textContent = item.label;
+            link.href = '#';
+            try {
+                const sec = epubBook.spine.get(item.href);
+                if (sec) link.dataset.spine = sec.index;
+                const hash = String(item.href || '').split('#')[1];
+                if (hash) link.dataset.frag = decodeURIComponent(hash);
+            } catch (e) { }
+            link.onclick = (e) => {
+                e.preventDefault();
+                rendition.display(item.href);
+                closeTocPanel();
+            };
+            tocContent.appendChild(link);
+        }
+
+        // highlight the last contents entry that starts at or before the reading position:
+        // first by file (spine index), then, when several chapters share that file, by
+        // where each chapter's anchor sits compared with the current page
+        function markCurrentChapter(location) {
+            const idx = location && location.start ? location.start.index : null;
+            const items = tocContent.querySelectorAll('.toc-item');
+            let best = null, bestIdx = -1;
+            items.forEach(a => {
+                a.classList.remove('current');
+                a.removeAttribute('aria-current');
+                if (idx == null || a.dataset.spine === undefined) return;
+                const n = parseInt(a.dataset.spine, 10);
+                if (n <= idx && n > bestIdx) { best = a; bestIdx = n; }
+            });
+            if (best && bestIdx === idx && rendition) {
+                try {
+                    const same = Array.from(items).filter(a => a.dataset.spine === String(idx) && a.dataset.frag);
+                    const contents = rendition.getContents().find(c => c.sectionIndex === idx);
+                    if (same.length && contents && contents.document && location.start.cfi) {
+                        const cfi = new ePub.CFI();
+                        for (const a of same) {
+                            const el = contents.document.getElementById(a.dataset.frag);
+                            if (!el) continue;
+                            if (cfi.compare(contents.cfiFromNode(el), location.start.cfi) <= 0) best = a;
+                            else break;
+                        }
+                    }
+                } catch (e) { /* keep the per-file match */ }
+            }
+            if (best) {
+                best.classList.add('current');
+                best.setAttribute('aria-current', 'true');
+            }
+        }
+
+        function openTocPanel() {
+            tocPanel.classList.add('open');
+            tocBtn.setAttribute('aria-expanded', 'true');
+            const cur = tocContent.querySelector('.toc-item.current');
+            if (cur) tocContent.scrollTop = Math.max(0, cur.offsetTop - tocContent.clientHeight / 2 + cur.offsetHeight / 2);
+            setTimeout(() => { try { closeToc.focus({ preventScroll: true }); } catch (e) { } }, 50);
+        }
+        function closeTocPanel() {
+            if (!tocPanel.classList.contains('open')) return;
+            tocPanel.classList.remove('open');
+            tocBtn.setAttribute('aria-expanded', 'false');
+            if (tocPanel.contains(document.activeElement)) tocBtn.focus({ preventScroll: true });
+        }
+
+        tocBtn.addEventListener('click', () => tocPanel.classList.contains('open') ? closeTocPanel() : openTocPanel());
+        closeToc.addEventListener('click', closeTocPanel);
+        tocBackdrop.addEventListener('click', closeTocPanel);
+
+        // drag the sheet's header down to close it
+        let sheetStartY = null;
+        tocHeader.addEventListener('touchstart', (e) => { sheetStartY = e.changedTouches[0].clientY; }, { passive: true });
+        tocHeader.addEventListener('touchend', (e) => {
+            if (sheetStartY != null && e.changedTouches[0].clientY - sheetStartY > 60) closeTocPanel();
+            sheetStartY = null;
+        }, { passive: true });
+
+        // arrow keys while focus is on the page around the book; Esc closes the sheet
+        document.addEventListener('keyup', (e) => {
+            if (e.key === 'Escape') { closeTocPanel(); return; }
+            if (!rendition || tocPanel.classList.contains('open')) return;
+            const t = e.target;
+            if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+            if (e.key === 'ArrowLeft') rendition.prev();
+            else if (e.key === 'ArrowRight') rendition.next();
+        });
+
+        // dark mode can flip from another tab (storage event above): repaint the book too
+        new MutationObserver(() => {
+            const want = document.body.classList.contains('dark') ? 'kn-dark' : 'kn-light';
+            if (rendition && rendition.knTheme !== want) {
+                rendition.knTheme = want;
+                rendition.themes.select(want);
+            }
+        }).observe(document.body, { attributes: true, attributeFilter: ['class'] });
 
         viewModeBtn.addEventListener('click', async () => {
             const newFlow = epubFlow === 'paginated' ? 'scrolled-doc' : 'paginated';

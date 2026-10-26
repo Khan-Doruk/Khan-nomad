@@ -23,6 +23,16 @@
     'Search everything on this card, wiki articles...': 'Bu karttaki her şeyde, wiki makalelerinde ara...',
     'Search': 'Ara', 'Search results': 'Arama sonuçları', 'Categories': 'Kategoriler',
     'Language': 'Dil',
+    // archive, admin, readers, movie info
+    'Library': 'Kütüphane', 'Refresh': 'Yenile', 'All articles': 'Tüm makaleler',
+    'Previous article': 'Önceki makale', 'Next article': 'Sonraki makale',
+    'Theme Customization': 'Tema özelleştirme', 'Back to Books': 'Kitaplara dön',
+    'Go to page': 'Sayfaya git', 'Reading mode': 'Okuma modu', 'Reading direction': 'Okuma yönü',
+    'Reset Zoom': 'Yakınlaştırmayı sıfırla', 'Scroll': 'Kaydır',
+    'Loading EPUB...': 'EPUB yükleniyor...', 'Preparing book...': 'Kitap hazırlanıyor...',
+    'No table of contents available.': 'İçindekiler bulunamadı.',
+    'Opening comic…': 'Çizgi roman açılıyor…', 'Checking file type…': 'Dosya türü kontrol ediliyor…',
+    'More': 'Daha fazla', 'Less': 'Daha az',
     // movies, shows, books redesign
     'New': 'Yeni', 'From start': 'Baştan',
     'Comics': 'Çizgi romanlar', 'Comic': 'Çizgi roman', 'Audio': 'Sesli', 'Series': 'Seri',

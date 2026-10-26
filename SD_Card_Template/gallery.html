@@ -151,6 +151,106 @@
     body.dark .back-btn { background: rgba(255,255,255,0.12); color: var(--header-text); }
     body.dark .view-btn.active { border-color: var(--primary); }
   </style>
+<link rel="stylesheet" href="/khan-pages.css">
+<style id="khan-page">
+  /* ---- Khan-Nomad gallery: pill toolbar, photo grid, dark lightbox ---- */
+  .toolbar{gap:8px;border-bottom:1px solid var(--kn-line)}
+  .toolbar-left{gap:8px}
+  /* "Sort:" and "Per page:" become pills with the label inside */
+  .toolbar label{display:inline-flex;align-items:center;gap:4px;height:36px;padding:0 4px 0 14px;border:1px solid var(--kn-line);border-radius:999px;background:var(--card-bg);color:var(--muted);font-size:.8rem;font-weight:600;white-space:nowrap;box-sizing:border-box}
+  .toolbar label select,
+  .toolbar label input[type='number']{border:0 !important;border-radius:999px !important;background:transparent !important;color:var(--text) !important;box-shadow:none !important;padding:.3rem .45rem !important;font-size:.88rem;font-weight:600;height:32px}
+  .toolbar label input[type='number']{width:3.4rem !important;text-align:center}
+  .toolbar .view-btn{width:36px;height:36px;padding:0 !important;display:inline-flex;align-items:center;justify-content:center;background:var(--card-bg);font-size:.95rem;line-height:1}
+  .toolbar .view-btn:focus-visible, .toolbar label:focus-within{outline:2px solid var(--kn-terracotta);outline-offset:2px}
+
+  /* upload: terracotta pill (still hidden until NomadUI says uploads are allowed) */
+  .toolbar #uploadBtn.kn-upload{height:36px;min-height:0;padding:0 16px 0 12px;gap:6px;border-radius:999px;border:1px solid var(--kn-terracotta);background:var(--kn-terracotta);color:#fff;font-size:.88rem;font-weight:700;box-shadow:none;display:inline-flex;align-items:center}
+  .toolbar #uploadBtn.kn-upload:hover:not(:disabled){filter:brightness(.95);transform:none;box-shadow:none}
+  .toolbar #uploadBtn.kn-upload:focus-visible{outline:2px solid var(--kn-terracotta);outline-offset:2px}
+  body.dark .toolbar #uploadBtn.kn-upload{color:#24140C}
+
+  /* ---- photo grid: rounded thumbnails, small gaps, three a row on a phone ---- */
+  main{padding:0}
+  .grid-wrapper{padding:14px 12px 6px}
+  .media-grid{gap:8px}
+  .media-grid.small  {grid-template-columns:repeat(auto-fill,minmax(88px,1fr))}
+  .media-grid.medium {grid-template-columns:repeat(auto-fill,minmax(136px,1fr))}
+  .media-grid.large  {grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}
+  @media (max-width:600px){
+    .grid-wrapper{padding:10px 4px 4px}
+    .media-grid{gap:4px}
+    .media-grid.small  {grid-template-columns:repeat(4,minmax(0,1fr))}
+    .media-grid.medium {grid-template-columns:repeat(3,minmax(0,1fr))}
+    .media-grid.large  {grid-template-columns:repeat(2,minmax(0,1fr))}
+  }
+  .media-card{border-radius:10px;background:var(--kn-sand);box-shadow:none;transition:transform .2s ease, box-shadow .2s ease;outline:none}
+  .media-grid.small .media-card{border-radius:8px}
+  .media-grid.large .media-card{border-radius:12px}
+  .media-card:hover{transform:none}
+  @media (hover:hover){ .media-card:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(27,58,75,.18)} }
+  .media-card:active{transform:scale(.98)}
+  .media-card:focus-visible{box-shadow:0 0 0 3px var(--kn-terracotta)}
+  /* video tiles: a small round play badge instead of the big triangle */
+  .media-card .play-overlay{font-size:0;width:38px;height:38px;padding:0;border-radius:50%;background:rgba(15,34,48,.55);text-shadow:none;opacity:1;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+  .media-card .play-overlay::before{content:"";width:15px;height:15px;margin-left:3px;background:#fff;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 3.5v17l14-8.5z' fill='black'/%3E%3C/svg%3E") center / contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 3.5v17l14-8.5z' fill='black'/%3E%3C/svg%3E") center / contain no-repeat}
+  .media-grid.small .media-card .play-overlay{width:28px;height:28px}
+  .media-grid.small .media-card .play-overlay::before{width:11px;height:11px;margin-left:2px}
+  /* thumbnail spinner: a small terracotta ring */
+  .media-card .spinner{top:6px;right:6px;width:24px;height:24px;background:var(--card-bg);box-shadow:0 1px 4px rgba(0,0,0,.15)}
+  .media-card .spinner .dot{width:12px;height:12px;border-radius:50%;background:transparent;border:2px solid var(--kn-terracotta);border-right-color:transparent;box-sizing:border-box}
+  #grid > p{color:var(--muted) !important;padding:40px 16px;font-size:.95rem}
+
+  /* ---- pager: pill buttons ---- */
+  .pager{gap:10px;padding:14px 12px 24px}
+  .pager[hidden]{display:none}
+  .pager .btn{min-height:38px;padding:0 16px;gap:4px;border-radius:999px;border:1px solid var(--kn-line);background:var(--card-bg);color:var(--text);font-size:.88rem;font-weight:600;box-shadow:none}
+  .pager .btn:hover:not(:disabled){transform:none;box-shadow:none;border-color:var(--kn-terracotta);color:var(--kn-terracotta)}
+  .pager .btn:disabled{opacity:.45}
+  .pager .btn:focus-visible{outline:2px solid var(--kn-terracotta);outline-offset:2px}
+  #prevBtn::before, #nextBtn::after{content:"";width:16px;height:16px;background:currentColor;-webkit-mask:var(--kn-chev) center / contain no-repeat;mask:var(--kn-chev) center / contain no-repeat}
+  #prevBtn{padding-left:10px;--kn-chev:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 6l-6 6 6 6'/%3E%3C/svg%3E")}
+  #nextBtn{padding-right:10px;--kn-chev:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 6l6 6-6 6'/%3E%3C/svg%3E")}
+  #pageInfo{color:var(--muted);font-size:.85rem;font-weight:600;min-width:6em;text-align:center}
+
+  /* ---- lightbox: dark backdrop, rounded picture, round controls ---- */
+  #modal.kn-lightbox{padding:0;background:rgba(8,16,22,.94);animation:knFade .2s ease both}
+  #modal.kn-lightbox .modal-content{width:100%;height:100vh;height:100dvh;max-width:none;max-height:none;margin:0;border:0;border-radius:0;box-shadow:none;background:transparent;color:#F4E9D4;padding:calc(60px + env(safe-area-inset-top, 0px)) 12px calc(14px + env(safe-area-inset-bottom, 0px));gap:12px;overflow:hidden;text-align:center}
+  #modal.kn-lightbox #modalMedia{min-height:0}
+  #modal.kn-lightbox #modalMedia img{width:auto;height:auto;max-width:100%;max-height:100%;border-radius:12px;box-shadow:0 12px 40px rgba(0,0,0,.45);animation:knFade .22s ease both}
+  #modal.kn-lightbox #modalMedia video{border-radius:12px}
+  #modal.kn-lightbox #modalMedia .plyr{border-radius:12px;overflow:hidden;--plyr-color-main:var(--kn-terracotta)}
+  #modal.kn-lightbox .modal-close,
+  #modal.kn-lightbox .kn-nav{position:absolute;z-index:3;width:42px;height:42px;padding:0;margin:0;border:0;border-radius:50%;background:rgba(244,233,212,.14);color:#F4E9D4;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-size:0;line-height:1;transition:background-color .15s ease;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+  #modal.kn-lightbox .modal-close{top:calc(12px + env(safe-area-inset-top, 0px));right:12px}
+  #modal.kn-lightbox .kn-nav{top:50%;margin-top:-21px;width:46px;height:46px}
+  #modal.kn-lightbox .kn-prev{left:12px}
+  #modal.kn-lightbox .kn-next{right:12px}
+  #modal.kn-lightbox .kn-nav[hidden]{display:none}
+  #modal.kn-lightbox .kn-nav:disabled{opacity:.3;cursor:default}
+  #modal.kn-lightbox .modal-close:hover, #modal.kn-lightbox .kn-nav:hover:not(:disabled){background:rgba(244,233,212,.26)}
+  #modal.kn-lightbox .modal-close:focus-visible, #modal.kn-lightbox .kn-nav:focus-visible{outline:2px solid var(--kn-terracotta);outline-offset:2px}
+  #modal.kn-lightbox .kn-count{position:absolute;top:calc(22px + env(safe-area-inset-top, 0px));left:16px;z-index:3;font-size:.85rem;font-weight:600;color:rgba(244,233,212,.75);font-variant-numeric:tabular-nums}
+  /* caption: the name in serif, then type and size */
+  #modal.kn-lightbox .modal-info{padding:0;max-height:none;overflow:visible;color:rgba(244,233,212,.7);font-size:.82rem;line-height:1.4}
+  #modal.kn-lightbox .modal-info p{display:inline;margin:0}
+  #modal.kn-lightbox .modal-info strong{display:none}
+  #modal.kn-lightbox .modal-info p:first-child{display:block;margin-bottom:2px;font-family:var(--kn-serif);font-size:1.02rem;font-weight:600;color:#F4E9D4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #modal.kn-lightbox .modal-info p:nth-child(2){text-transform:capitalize}
+  #modal.kn-lightbox .modal-info p:nth-child(3)::before{content:"\00B7";margin:0 8px}
+  /* phones: the arrows sit lower so they never cover the middle of the photo */
+  @media (max-width:600px){
+    #modal.kn-lightbox .kn-nav{top:auto;bottom:calc(10px + env(safe-area-inset-bottom, 0px));margin-top:0;width:42px;height:42px}
+    #modal.kn-lightbox .modal-content{padding-bottom:calc(62px + env(safe-area-inset-bottom, 0px))}
+  }
+  html.kn-lb-open, html.kn-lb-open body{overflow:hidden}
+  @keyframes knFade{from{opacity:0}to{opacity:1}}
+  @media (prefers-reduced-motion: reduce){
+    #modal.kn-lightbox, #modal.kn-lightbox #modalMedia img{animation:none}
+    .media-card, .media-card:hover, .media-card:active{transition:none;transform:none}
+    .media-card .spinner .dot{animation:none}
+  }
+</style>
 <script src="/i18n.js"></script>
 </head>
 <body data-page="gallery">
@@ -892,6 +992,137 @@ async function init(){
 }
 document.addEventListener('keydown', (e)=> { if(e.key === 'Escape'){ if(modal.style.display === 'flex') closeModal({ target: modal }); } });
 init();
+</script>
+
+<script>
+/* Khan-Nomad gallery: upload pill icon, lightbox close/prev/next/counter, arrow keys and
+   swipe between photos, pager hidden on a single page, toolbar pinned under the header.
+   Hooks the functions above instead of rewriting them. */
+(function(){
+  const svg = (paths, size) => '<svg width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="pointer-events:none">' + paths + '</svg>';
+  const ICON_UPLOAD = '<path d="M12 16V5M7 10l5-5 5 5M5 20h14"/>';
+  const ICON_CLOSE  = '<path d="M6 6l12 12M18 6L6 18"/>';
+  const ICON_PREV   = '<path d="M15 6l-6 6 6 6"/>';
+  const ICON_NEXT   = '<path d="M9 6l6 6-6 6"/>';
+
+  // upload: terracotta pill. the text node stays, so i18n still translates it,
+  // and the display:none / uploadsDisabled logic above is untouched
+  uploadBtn.classList.add('kn-upload');
+  uploadBtn.insertAdjacentHTML('afterbegin', svg(ICON_UPLOAD, 17));
+
+  // sticky toolbar sits exactly under the header, whatever height it ends up
+  (function fitToolbar(){
+    const tb = document.querySelector('.toolbar');
+    const hd = document.querySelector('body > header');
+    if(!tb || !hd) return;
+    const apply = () => { tb.style.top = hd.offsetHeight + 'px'; };
+    apply();
+    window.addEventListener('resize', apply);
+    window.addEventListener('load', apply);
+  })();
+
+  /* ---- lightbox ---- */
+  modal.classList.add('kn-lightbox');
+  const box = modal.querySelector('.modal-content');
+  box.setAttribute('role', 'dialog');
+  box.setAttribute('aria-modal', 'true');
+  const closeBtn = box.querySelector('.modal-close');
+  closeBtn.type = 'button';
+  closeBtn.innerHTML = svg(ICON_CLOSE, 22);   // svg ignores pointer events, so closeModal still sees the button as target
+  closeBtn.setAttribute('aria-label', 'Close');
+  closeBtn.title = 'Close';
+
+  function navButton(cls, label, icon){
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'kn-nav ' + cls;
+    b.setAttribute('aria-label', label);
+    b.title = label;
+    b.hidden = true;
+    b.innerHTML = svg(icon, 24);
+    box.appendChild(b);
+    return b;
+  }
+  const prevPhoto = navButton('kn-prev', 'Previous', ICON_PREV);
+  const nextPhoto = navButton('kn-next', 'Next', ICON_NEXT);
+  const counter = document.createElement('div');
+  counter.className = 'kn-count';
+  counter.setAttribute('data-no-i18n', '');
+  box.appendChild(counter);
+
+  let current = null;   // the item the lightbox shows
+  const isOpen = () => modal.style.display === 'flex';
+  const position = () => current ? filtered.indexOf(current) : -1;
+
+  function updateNav(){
+    const i = position(), n = filtered.length;
+    const show = i >= 0 && n > 1;
+    prevPhoto.hidden = nextPhoto.hidden = !show;
+    prevPhoto.disabled = i <= 0;
+    nextPhoto.disabled = i < 0 || i >= n - 1;
+    counter.textContent = show ? (i + 1) + ' / ' + n : '';
+  }
+  function step(delta){
+    const j = position() + delta;
+    if(position() < 0 || j < 0 || j >= filtered.length) return;
+    openModal(filtered[j]);
+  }
+  prevPhoto.addEventListener('click', (e) => { e.stopPropagation(); step(-1); });
+  nextPhoto.addEventListener('click', (e) => { e.stopPropagation(); step(1); });
+
+  const _openModal = openModal;
+  openModal = function(item){
+    current = item;
+    const out = _openModal.apply(this, arguments);
+    try { updateNav(); document.documentElement.classList.add('kn-lb-open'); } catch(e){}
+    return out;
+  };
+  const _closeModal = closeModal;
+  closeModal = function(evt){
+    const out = _closeModal.apply(this, arguments);
+    if(!isOpen()){ current = null; document.documentElement.classList.remove('kn-lb-open'); }
+    return out;
+  };
+
+  // arrow keys flip photos; leave them alone while the video player or a field has focus
+  document.addEventListener('keydown', (e) => {
+    if(!isOpen() || e.altKey || e.ctrlKey || e.metaKey) return;
+    const t = e.target;
+    if(t && t.closest && t.closest('.plyr, video, input, select, textarea')) return;
+    if(e.key === 'ArrowLeft'){ e.preventDefault(); step(-1); }
+    else if(e.key === 'ArrowRight'){ e.preventDefault(); step(1); }
+  });
+
+  // swipe left/right on a photo (not on videos: that would fight the seek bar, nor while zoomed in)
+  let sx = 0, sy = 0, st = 0, tracking = false;
+  modalMedia.addEventListener('touchstart', (e) => {
+    tracking = false;
+    if(e.touches.length !== 1 || !current || current.type === 'video') return;
+    const img = modalMedia.querySelector('img');
+    const tf = img ? (img.style.transform || '') : '';
+    if(tf && !/^scale\(1\)/.test(tf)) return;   // zoomed: the drag pans instead
+    sx = e.touches[0].clientX; sy = e.touches[0].clientY; st = Date.now(); tracking = true;
+  }, { passive: true });
+  modalMedia.addEventListener('touchend', (e) => {
+    if(!tracking) return;
+    tracking = false;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - sx, dy = t.clientY - sy;
+    if(Date.now() - st < 700 && Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) step(dx < 0 ? 1 : -1);
+  }, { passive: true });
+
+  /* ---- pager: hide it when everything fits on one page ---- */
+  const pager = document.querySelector('.pager');
+  const _renderPage = renderPage;
+  renderPage = function(){
+    const out = _renderPage.apply(this, arguments);
+    try {
+      pager.hidden = Math.ceil(filtered.length / pageSize) <= 1;
+      if(isOpen()) updateNav();
+    } catch(e){}
+    return out;
+  };
+})();
 </script>
 </body>
 </html>

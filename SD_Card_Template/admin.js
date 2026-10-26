@@ -8,12 +8,12 @@ function renderSdTrustBadge(statTrusted) {
   badge.style.display = 'inline-block';
   if (statTrusted) {
     badge.textContent = 'Verified';
-    badge.style.background = 'var(--success)';
-    badge.style.color = '#fff';
+    badge.style.background = 'var(--kn-teal-soft, var(--success))';
+    badge.style.color = 'var(--kn-teal-ink, #fff)';
   } else {
     badge.textContent = 'Estimate';
-    badge.style.background = 'var(--warning)';
-    badge.style.color = '#212529';
+    badge.style.background = 'var(--kn-terracotta-soft, var(--warning))';
+    badge.style.color = 'var(--kn-terracotta, #212529)';
   }
 }
 
@@ -453,8 +453,10 @@ function updateModeUI(mode) {
     if (btn) {
       btn.classList.remove('btn-primary', 'btn-success', 'btn-secondary');
       btn.classList.add('btn-secondary');
+      btn.setAttribute('aria-pressed', 'false');
     }
   });
+  if (buttons[mode]) buttons[mode].setAttribute('aria-pressed', 'true');
 
   // Highlight active button
   if (buttons[mode]) {
@@ -580,11 +582,11 @@ function setBrightness(val) {
 function updateBrightnessLabel(val) {
   const pct = Math.max(0, Math.min(100, parseInt(val, 10) || 0));
   document.getElementById('brightness-percent').textContent = `${pct}%`;
-  // paint the used part blue via the element's own background so it repaints while dragging
+  // paint the used part terracotta via the element's own background so it repaints while dragging
   const slider = document.getElementById('brightness');
   if (slider) {
     slider.style.background =
-      `linear-gradient(to right, var(--primary) 0 ${pct}%, var(--card-border) ${pct}% 100%)`;
+      `linear-gradient(to right, var(--kn-terracotta, var(--primary)) 0 ${pct}%, var(--kn-line, var(--card-border)) ${pct}% 100%)`;
   }
 }
 
@@ -629,23 +631,24 @@ function updateConsoleDisplay() {
   if (!console) return;
 
   console.innerHTML = consoleLines.map(({ line, type }) => {
-    let color = '#00ff00'; // Default green
+    // tuned for the Steppe Night console background (#0F2230)
+    let color = '#D9E4E8'; // default: pale teal
     let icon = '';
 
     if (type === 'error') {
-      color = '#ff4444';
+      color = '#FF8E7A';
       icon = '❌ ';
     } else if (type === 'warning') {
-      color = '#ffaa00';
+      color = '#F2B66D';
       icon = '⚠️ ';
     } else if (type === 'info') {
-      color = '#00aaff';
+      color = '#8FC4D8';
       icon = 'ℹ️ ';
     } else if (type === 'success') {
-      color = '#00ff88';
+      color = '#9FD6A3';
       icon = '✅ ';
     } else if (type === 'system') {
-      color = '#88aaff';
+      color = '#B9B4E6';
       icon = '🔧 ';
     }
 
@@ -1020,7 +1023,8 @@ async function updateTemp() {
     }
 
     const tempBtn = document.getElementById('cpu-temp');
-    tempBtn.textContent = `🌡️ ${displayTemp.toFixed(1)} ${unit}`;
+    // the thermometer is drawn by CSS (#cpu-temp::before) in the state color
+    tempBtn.textContent = `${displayTemp.toFixed(1)} ${unit}`;
 
     // Color coding based on temperature
     tempBtn.classList.remove('btn-success', 'btn-warning', 'btn-danger', 'btn-secondary');
@@ -1612,9 +1616,9 @@ async function computeLibraryStats() {
     ].filter(([, v]) => v > 0);
 
     wrap.innerHTML = stats.length ? stats.map(([label, v]) => `
-      <div style="background: var(--bg); border: 1px solid var(--card-border, var(--line, #ddd)); border-radius: 8px; padding: 0.5rem; text-align: center;">
-        <div style="font-weight: 700; font-size: 1.05rem;">${v.toLocaleString()}</div>
-        <div style="font-size: 0.72rem; color: var(--muted);">${label}</div>
+      <div class="kn-stat">
+        <div class="kn-stat-v">${v.toLocaleString()}</div>
+        <div class="kn-stat-l">${label}</div>
       </div>`).join('')
       : '<div style="grid-column:1/-1;font-size:0.85rem;color:var(--muted);">No library index yet. Run a scan below.</div>';
   } catch (e) {

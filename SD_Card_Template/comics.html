@@ -27,135 +27,20 @@
 
         html, body {
             height: 100%;
-            background: var(--bg);
+            background: var(--kn-desk);
             color: var(--text);
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             overscroll-behavior: none;
         }
 
-        #topbar {
-            position: fixed;
-            top: 0; left: 0; right: 0;
-            height: 52px;
-            background: var(--card);
-            backdrop-filter: blur(8px);
-            border-bottom: 1px solid var(--line);
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            padding: 0 8px;
-            z-index: 200;
-            transition: transform 0.3s ease;
-        }
-
-        #topbar.hidden { transform: translateY(-100%); }
-
-        #back-btn {
-            background: var(--card);
-            color: var(--text);
-            text-decoration: none;
-            padding: 6px 10px;
-            border-radius: var(--radius, 6px);
-            border: 1px solid var(--line);
-            font-size: 12px;
-            white-space: nowrap;
-            flex-shrink: 0;
-            transition: background 0.2s, color 0.2s;
-        }
-        #back-btn:hover { background: var(--primary) !important; color: white !important; }
-
-        #comic-title {
-            flex: 1;
-            font-size: 13px;
-            font-weight: 600;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            min-width: 0;
-        }
-
-        #page-indicator {
-            display: none;
-        }
-
-        .topbar-controls {
-            display: flex;
-            gap: 4px;
-            align-items: center;
-            flex-shrink: 0;
-        }
-
-        .mode-select {
-            background: var(--card);
-            color: var(--text);
-            border: 1px solid var(--line);
-            padding: 4px 6px;
-            border-radius: var(--radius, 6px);
-            font-size: 11px;
-            cursor: pointer;
-            transition: background 0.2s, color 0.2s, border 0.2s;
-            max-width: 80px;
-        }
-        .mode-select:hover {
-            background: var(--primary-dark) !important;
-            border-color: var(--primary) !important;
-        }
-        .mode-select option {
-            background: var(--card);
-            color: var(--text);
-        }
-
-        @media (min-width: 640px) {
-            #topbar {
-                gap: 10px;
-                padding: 0 12px;
-            }
-            #back-btn {
-                padding: 6px 14px;
-                font-size: 14px;
-            }
-            #comic-title {
-                font-size: 15px;
-            }
-            #page-indicator {
-                display: block;
-                font-size: 13px;
-                color: var(--muted);
-                white-space: nowrap;
-                flex-shrink: 0;
-            }
-            .topbar-controls {
-                gap: 8px;
-            }
-            .mode-select {
-                padding: 6px 10px;
-                font-size: 13px;
-                max-width: none;
-            }
-        }
-
-        button.topbar-btn {
-            background: var(--card);
-            color: var(--text);
-            border: 1px solid var(--line);
-            padding: 6px 12px;
-            border-radius: var(--radius, 6px);
-            font-size: 13px;
-            cursor: pointer;
-            white-space: nowrap;
-            flex-shrink: 0;
-            transition: background 0.2s, color 0.2s;
-        }
-        button.topbar-btn:hover { background: var(--primary) !important; color: white !important; }
-
         #reader {
-            margin-top: 52px;
-            min-height: calc(100vh - 52px);
+            margin-top: var(--kn-bar);
+            min-height: calc(100vh - var(--kn-bar));
             display: flex;
             flex-direction: column;
             align-items: center;
             padding: 0;
-            background: var(--bg);
+            background: var(--kn-desk);
         }
 
         #reader.webtoon .page-wrapper {
@@ -163,7 +48,7 @@
             max-width: 800px;
             display: block;
             margin: 0 auto;
-            background: var(--bg);
+            background: var(--kn-desk);
         }
         #reader.webtoon .comic-page {
             width: 100%;
@@ -173,9 +58,9 @@
 
         #reader.paged {
             overflow: hidden;
-            height: calc(100vh - 52px);
+            height: calc(100vh - var(--kn-bar));
             justify-content: center;
-            background: var(--bg);
+            background: var(--kn-desk);
         }
         #reader.paged .page-wrapper {
             display: none;
@@ -183,14 +68,14 @@
             height: 100%;
             justify-content: center;
             align-items: center;
-            background: var(--bg);
+            background: var(--kn-desk);
         }
         #reader.paged .page-wrapper.active {
             display: flex;
         }
         #reader.paged .comic-page {
             max-width: 100%;
-            max-height: calc(100vh - 52px - 60px);
+            max-height: calc(100vh - var(--kn-bar) - 60px);
             width: auto;
             height: auto;
             object-fit: contain;
@@ -199,9 +84,9 @@
 
         #reader.two-page {
             overflow: hidden;
-            height: calc(100vh - 52px);
+            height: calc(100vh - var(--kn-bar));
             justify-content: center;
-            background: var(--bg);
+            background: var(--kn-desk);
             flex-direction: row;
         }
         #reader.two-page .page-wrapper {
@@ -210,14 +95,14 @@
             height: 100%;
             justify-content: center;
             align-items: center;
-            background: var(--bg);
+            background: var(--kn-desk);
         }
         #reader.two-page .page-wrapper.active {
             display: flex;
         }
         #reader.two-page .comic-page {
             max-width: 100%;
-            max-height: calc(100vh - 52px - 60px);
+            max-height: calc(100vh - var(--kn-bar) - 60px);
             width: auto;
             height: auto;
             object-fit: contain;
@@ -229,42 +114,10 @@
             flex-direction: row-reverse;
         }
 
-        #page-controls {
-            position: fixed;
-            bottom: 0; left: 0; right: 0;
-            height: 56px;
-            background: var(--card);
-            backdrop-filter: blur(8px);
-            border-top: 1px solid var(--line);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            gap: 20px;
-            z-index: 200;
-        }
-
-        #page-controls.visible { display: flex; }
-
-        #page-controls button {
-            background: var(--card);
-            color: var(--text);
-            border: 1px solid var(--line);
-            padding: 8px 22px;
-            border-radius: var(--radius, 6px);
-            font-size: 15px;
-            cursor: pointer;
-            transition: background 0.2s, color 0.2s;
-        }
-        #page-controls button:hover {
-            background: var(--primary) !important;
-            color: white !important;
-        }
-        #page-controls button:disabled { opacity: 0.35; cursor: not-allowed; }
-
         .page-placeholder {
             width: 100%;
             min-height: 400px;
-            background: var(--bg);
+            background: var(--kn-desk);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -272,26 +125,6 @@
             font-size: 13px;
         }
         .page-placeholder.loading::after { content: 'Loading...'; }
-
-        .topbar-controls {
-            display: flex;
-            gap: 10px;
-        }
-
-        .mode-select {
-            padding: 8px 12px;
-            border-radius: 4px;
-            border: 1px solid var(--line);
-            background: var(--card);
-            color: var(--text);
-            font-size: 14px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .mode-select:hover {
-            background: var(--bg);
-        }
 
         #overlay {
             position: fixed;
@@ -326,7 +159,7 @@
 
         #error-banner {
             position: fixed;
-            top: 60px; left: 50%;
+            top: calc(var(--kn-bar) + 8px); left: 50%;
             transform: translateX(-50%);
             background: #c62828;
             color: #fff;
@@ -342,7 +175,7 @@
         #tap-left, #tap-right {
             display: none;
             position: fixed;
-            top: 52px;
+            top: var(--kn-bar);
             bottom: 56px;
             width: 35%;
             z-index: 100;
@@ -353,21 +186,223 @@
         body.paged-mode #tap-left,
         body.paged-mode #tap-right { display: block; }
     </style>
+<link rel="stylesheet" href="/khan-pages.css">
+<style id="khan-page">
+/* Khan-Nomad comic reader: teal bar with the kilim band, round back button,
+   pill segmented controls for mode and direction, a dark desk around the pages. */
+:root {
+  --kn-bar: 59px;           /* 52px bar + 7px kilim band */
+  --kn-desk: #0F2230;
+}
+body.dark { --kn-desk: #09161F; }
+html, body { background: var(--kn-desk); }
+body.rtl #reader.two-page { flex-direction: row-reverse; }
+
+/* ---- top bar ---- */
+#topbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--kn-bar);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 8px 7px;
+  background: var(--header-bg, var(--primary));
+  color: var(--kn-cream);
+  transition: transform .3s ease;
+}
+#topbar::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 7px;
+  pointer-events: none;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='7'%3E%3Crect width='16' height='7' fill='%23C8553D'/%3E%3Cpath d='M8 .5l3 3-3 3-3-3z' fill='%23EBD9B4'/%3E%3Cpath d='M0 .5l3 3-3 3M16 .5l-3 3 3 3' fill='%231B3A4B'/%3E%3C/svg%3E") repeat-x;
+}
+#topbar.hidden { transform: translateY(-100%); }
+#comic-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0 4px;
+  font-family: var(--kn-serif);
+  font-weight: 600;
+  font-size: 1.05rem;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#page-indicator { display: none; }
+.topbar-controls { flex: none; display: flex; align-items: center; gap: 6px; }
+.mode-select[hidden] { display: none !important; }   /* kept as the source of truth for the script */
+
+/* ---- round buttons ---- */
+.kn-round {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(244, 233, 212, 0.14);
+  color: var(--kn-cream);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background .15s ease, opacity .15s ease;
+}
+.kn-round:hover { background: rgba(244, 233, 212, 0.24); }
+.kn-round:focus-visible { outline: 2px solid var(--kn-cream); outline-offset: 2px; }
+.kn-round:disabled { opacity: .35; cursor: default; }
+.kn-round svg { width: 20px; height: 20px; flex: none; }
+
+/* ---- pill segmented control ---- */
+.kn-seg {
+  flex: none;
+  display: inline-flex;
+  padding: 2px;
+  gap: 2px;
+  border-radius: 999px;
+  background: rgba(244, 233, 212, 0.12);
+}
+.kn-seg button {
+  flex: none;
+  min-width: 40px;
+  height: 40px;
+  padding: 0 10px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: rgba(244, 233, 212, 0.78);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font: inherit;
+  font-size: .85rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background .15s ease, color .15s ease;
+}
+.kn-seg button svg { width: 20px; height: 20px; flex: none; }
+.kn-seg button:hover { color: var(--kn-cream); background: rgba(244, 233, 212, 0.12); }
+.kn-seg button:focus-visible { outline: 2px solid var(--kn-cream); outline-offset: 1px; }
+.kn-seg button[aria-pressed="true"] { background: var(--kn-terracotta); color: #fff; }
+.kn-seg-label { display: none; }
+/* reading direction only matters when turning pages */
+body:not(.paged-mode) #direction-seg { display: none; }
+
+@media (max-width: 639px) {
+  .kn-seg button { padding: 0; }
+}
+@media (min-width: 640px) {
+  #topbar { gap: 10px; padding: 0 12px 7px; }
+  #comic-title { font-size: 1.15rem; }
+  #page-indicator {
+    display: block;
+    flex: none;
+    padding: 5px 12px;
+    border-radius: 999px;
+    background: rgba(244, 233, 212, 0.14);
+    color: var(--kn-cream);
+    font-size: .85rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  #page-indicator:empty { display: none; }
+  .topbar-controls { gap: 8px; }
+}
+@media (min-width: 1000px) {
+  .kn-seg button { padding: 0 14px 0 12px; }
+  .kn-seg-label { display: inline; }
+}
+
+/* ---- bottom bar for the page modes ---- */
+#page-controls {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: 56px;
+  z-index: 200;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  background: var(--header-bg, var(--primary));
+  color: var(--kn-cream);
+}
+#page-controls.visible { display: flex; }
+#paged-indicator {
+  min-width: 76px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(244, 233, 212, 0.14);
+  font-size: .9rem;
+  font-weight: 600;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+#paged-indicator:empty { visibility: hidden; }
+
+/* ---- pages, loading, errors ---- */
+.page-placeholder { color: rgba(244, 233, 212, 0.55); }
+#overlay { background: rgba(9, 22, 31, 0.92); color: var(--kn-cream); }
+#overlay-status { color: rgba(244, 233, 212, 0.85); }
+.spinner { border-color: rgba(244, 233, 212, 0.18); border-top-color: var(--kn-terracotta); }
+#error-banner { background: var(--kn-terracotta); border-radius: 999px; padding: 10px 22px; box-shadow: 0 8px 24px rgba(0,0,0,.3); }
+
+@media (prefers-reduced-motion: reduce) {
+  #topbar, .kn-round, .kn-seg button { transition: none; }
+}
+</style>
 <script src="/i18n.js"></script>
 </head>
 <body>
 
     <div id="topbar">
-        <a id="back-btn" href="/books">&#8592; Back</a>
+        <a id="back-btn" class="kn-round" href="/books" title="Back to Books" aria-label="Back to Books">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>
+        </a>
         <div id="comic-title">Loading…</div>
         <div id="page-indicator"></div>
         <div class="topbar-controls">
-            <select id="mode-select" class="mode-select" onchange="changeMode()">
+            <div class="kn-seg" id="mode-seg" role="group" aria-label="Reading mode">
+                <button type="button" data-value="webtoon" title="Webtoon" aria-label="Webtoon" aria-pressed="false">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="2.5" width="10" height="19" rx="1.5"/><path d="M7 9h10M7 15h10"/></svg>
+                    <span class="kn-seg-label">Webtoon</span>
+                </button>
+                <button type="button" data-value="paged" title="Single Page" aria-label="Single Page" aria-pressed="false">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="3" width="12" height="18" rx="1.5"/></svg>
+                    <span class="kn-seg-label">Single Page</span>
+                </button>
+                <button type="button" data-value="two-page" title="Two Page" aria-label="Two Page" aria-pressed="false">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="4" width="9" height="16" rx="1.2"/><rect x="12.5" y="4" width="9" height="16" rx="1.2"/></svg>
+                    <span class="kn-seg-label">Two Page</span>
+                </button>
+            </div>
+            <div class="kn-seg" id="direction-seg" role="group" aria-label="Reading direction">
+                <button type="button" data-value="ltr" title="Left to Right" aria-label="Left to Right" aria-pressed="false">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg>
+                    <span class="kn-seg-label">Left to Right</span>
+                </button>
+                <button type="button" data-value="rtl" title="Right to Left" aria-label="Right to Left" aria-pressed="false">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12H5M11 6l-6 6 6 6"/></svg>
+                    <span class="kn-seg-label">Right to Left</span>
+                </button>
+            </div>
+            <select id="mode-select" class="mode-select" onchange="changeMode()" hidden>
                 <option value="webtoon">Webtoon</option>
                 <option value="paged">Single Page</option>
                 <option value="two-page">Two Page</option>
             </select>
-            <select id="direction-select" class="mode-select" onchange="changeDirection()">
+            <select id="direction-select" class="mode-select" onchange="changeDirection()" hidden>
                 <option value="ltr">Left to Right</option>
                 <option value="rtl">Right to Left</option>
             </select>
@@ -379,9 +414,13 @@
     <div id="reader" class="webtoon"></div>
 
     <div id="page-controls">
-        <button id="btn-prev" onclick="prevPage()">← Prev</button>
-        <span id="paged-indicator" style="font-size:14px;opacity:0.8"></span>
-        <button id="btn-next" onclick="nextPage()">Next →</button>
+        <button id="btn-prev" class="kn-round" onclick="prevPage()" title="Previous" aria-label="Previous">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <span id="paged-indicator"></span>
+        <button id="btn-next" class="kn-round" onclick="nextPage()" title="Next" aria-label="Next">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
     </div>
 
     <div id="overlay">
@@ -462,6 +501,7 @@
 
         document.getElementById('mode-select').value = savedMode;
         document.getElementById('direction-select').value = savedDirection;
+        syncSegments();
 
         if (savedMode === 'paged' || savedMode === 'two-page') {
             document.getElementById('reader').className = savedMode;
@@ -1196,6 +1236,8 @@
         } else {
             document.body.classList.remove('rtl');
         }
+        syncSegments();
+        updateIndicator();
     }
 
     function applyMode() {
@@ -1220,7 +1262,28 @@
             setTimeout(() => scrollToPage(currentPage), 100);
         }
         updateIndicator();
+        syncSegments();
     }
+
+    // the pill segments drive the (hidden) selects, so changeMode/changeDirection stay as they were
+    function syncSegments() {
+        document.querySelectorAll('#mode-seg button').forEach(b =>
+            b.setAttribute('aria-pressed', String(b.dataset.value === mode)));
+        document.querySelectorAll('#direction-seg button').forEach(b =>
+            b.setAttribute('aria-pressed', String(b.dataset.value === direction)));
+    }
+    document.querySelectorAll('#mode-seg button').forEach(b => b.addEventListener('click', () => {
+        const sel = document.getElementById('mode-select');
+        if (sel.value === b.dataset.value && mode === b.dataset.value) return;
+        sel.value = b.dataset.value;
+        changeMode();
+    }));
+    document.querySelectorAll('#direction-seg button').forEach(b => b.addEventListener('click', () => {
+        const sel = document.getElementById('direction-select');
+        if (sel.value === b.dataset.value && direction === b.dataset.value) return;
+        sel.value = b.dataset.value;
+        changeDirection();
+    }));
 
     function goToPage(idx) {
         if (idx < 0) idx = 0;
@@ -1290,13 +1353,16 @@
     function updateIndicator() {
         const total = entries.length;
         const cur   = currentPage + 1;
-        document.getElementById('page-indicator').textContent = cur + ' / ' + total;
+        const label = total > 0 ? cur + ' / ' + total : '';   // empty hides the pill until the comic is open
+        document.getElementById('page-indicator').textContent = label;
         const paged = document.getElementById('paged-indicator');
-        if (paged) paged.textContent = cur + ' / ' + total;
+        if (paged) paged.textContent = label;
         const prev = document.getElementById('btn-prev');
         const next = document.getElementById('btn-next');
-        if (prev) prev.disabled = currentPage === 0;
-        if (next) next.disabled = currentPage === total - 1;
+        // the buttons are left/right on screen: in right-to-left reading the left one moves forward
+        const atFirst = currentPage <= 0, atLast = currentPage >= total - 1;
+        if (prev) prev.disabled = direction === 'rtl' ? atLast : atFirst;
+        if (next) next.disabled = direction === 'rtl' ? atFirst : atLast;
     }
 
     document.addEventListener('keydown', e => {

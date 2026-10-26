@@ -26,6 +26,7 @@ body > header {
   align-items: center;
   justify-content: flex-start;
   gap: 10px;
+  flex-direction: row !important;   /* master.css stacks headers into a column on phones */
 }
 body > header h1 {
   display: block !important;   /* master.css hides it on phones; the round back button leaves room now */
