@@ -200,12 +200,13 @@ class Handler(BaseHTTPRequestHandler):
         return {k: v[0] for k, v in parse_qs(raw.decode("utf-8", "replace")).items()}, [], raw
 
     # ---------- file serving with Range ----------
-    def serve_file(self, real, page=False):
+    def serve_file(self, real, page=False, as_path=None):
         size = os.path.getsize(real)
-        ctype = mime_for(real)
+        ctype = mime_for(as_path or real)
+        gzipped = as_path is not None
         start, end = 0, size - 1
         status = 200
-        rng = self.headers.get("Range")
+        rng = None if gzipped else self.headers.get("Range")
         if rng:
             m = re.match(r"bytes=(\d*)-(\d*)", rng.strip())
             if m:
@@ -227,6 +228,8 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("Content-Type", ctype)
         self.send_header("Content-Length", str(length))
         self.send_header("Accept-Ranges", "bytes")
+        if gzipped:
+            self.send_header("Content-Encoding", "gzip")
         self.send_header("Access-Control-Allow-Origin", "*")
         # always revalidate: this is for editing the interface, so changes must show on reload
         self.send_header("Cache-Control", "no-cache")
@@ -252,6 +255,9 @@ class Handler(BaseHTTPRequestHandler):
         real = self.nomad.disk(card_path)
         if real and os.path.isdir(real):
             real = os.path.join(real, "index.html")
+        if real and not os.path.isfile(real) and os.path.isfile(real + ".gz"):
+            # like the firmware: "x.gz" is served as x with Content-Encoding: gzip
+            return self.serve_file(real + ".gz", as_path=real)
         if not real or not os.path.isfile(real):
             return self.send_text("File not found", 404)
         self.serve_file(real)
@@ -341,7 +347,9 @@ class Handler(BaseHTTPRequestHandler):
 
         # anything that looks like a file comes off the "card"
         real = n.disk(path)
-        if real and (os.path.isfile(real) or os.path.isfile(os.path.join(real, "index.html"))):
+        if real and (os.path.isfile(real) or os.path.isfile(real + ".gz")
+                     or os.path.isfile(os.path.join(real, "index.html"))
+                     or os.path.isfile(os.path.join(real, "index.html.gz"))):
             return self.serve_card_path(path)
         if "." in os.path.basename(path):
             return self.send_text("File not found", 404)
