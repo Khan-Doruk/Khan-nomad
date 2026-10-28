@@ -4667,6 +4667,13 @@ String getMimeType(const String &path) {
   if (path.endsWith(".ndjson")) return "application/x-ndjson";
   return "application/octet-stream"; // fallback safe binary
 }
+// Interface files may be stored gzipped on the card (page.html.gz, the card builder
+// does this). AsyncFileResponse already serves "x.gz" with Content-Encoding: gzip when
+// "x" itself is missing, so the existence checks just have to accept either one.
+static bool sdHasOrGz(const String &path) {
+    return SD_MMC.exists(path) || SD_MMC.exists(path + ".gz");
+}
+
 void serveProtectedFile(AsyncWebServerRequest *request, const String& filePath) {
     if (sdMutex) {
         if (xSemaphoreTake(sdMutex, pdMS_TO_TICKS(5000)) != pdTRUE) {
@@ -4679,7 +4686,7 @@ void serveProtectedFile(AsyncWebServerRequest *request, const String& filePath) 
         if (sdMutex) xSemaphoreGive(sdMutex);
     };
     
-    if (!SD_MMC.exists(filePath)) {
+    if (!sdHasOrGz(filePath)) {
         releaseSd();
         request->send(404, "text/plain", "File not found");
         return;
@@ -5267,7 +5274,7 @@ Serial.println("SD Card initialized successfully!");
         request->send(503, "text/plain", "SD busy");
         return;
       }
-      bool exists = SD_MMC.exists(sdPath.c_str());
+      bool exists = sdHasOrGz(sdPath);
       if (sdMutex) xSemaphoreGive(sdMutex);
 
       if (!exists) {
@@ -5419,7 +5426,7 @@ Serial.println("SD Card initialized successfully!");
             };
             // Check if file exists
                           
-            bool fileExists = SD_MMC.exists(filePath);
+            bool fileExists = sdHasOrGz(filePath);
 
             if (!fileExists) {
                 releaseSd();
@@ -5433,7 +5440,7 @@ Serial.println("SD Card initialized successfully!");
                     return;
                 }
                 
-                bool indexExists = SD_MMC.exists(filePath);
+                bool indexExists = sdHasOrGz(filePath);
 
                 if (!indexExists) {
                     releaseSd();

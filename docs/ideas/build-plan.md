@@ -32,8 +32,8 @@ for: built-in 1.47" screen, microSD slot and RGB LED, so no wiring is needed.
 
 ### When it arrives
 
-- [ ] Flash the **Khan-Nomad firmware**: `JcorpNomadProject.ino.merged.bin` at `0x0` (see [building-firmware.md](../building-firmware.md)). The original firmware on nomadflash.jcorptech.net is the fallback.
-- [ ] Copy this fork's `SD_Card_Template` onto the card, then copy media into the folders
+- [ ] Flash the **Khan-Nomad firmware**: `JcorpNomadProject.ino.merged.bin` at `0x0` (see [building-firmware.md](../building-firmware.md)). The original firmware on nomadflash.jcorptech.net is the fallback (if you use it, rebuild the card with `--no-gzip`).
+- [ ] Build the card: `python tools/card-builder/build_card.py E:\ --add <your media folders>` (installs the interface gzipped, sorts media, checks the card; see [tools/card-builder](../../tools/card-builder/README.md))
 - [ ] Add the Wikipedia ZIM with Nomad Tools
 - [ ] Boot: the screen shows the yurt and a `Khan-Nomad` WiFi network appears (default password `password`)
 - [ ] Open the menu, check the Steppe Night theme and the EN/TR switch
