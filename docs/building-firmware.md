@@ -71,3 +71,19 @@ any ESP32 web flasher (for example <https://espressif.github.io/esptool-js/>).
 - The LCD shows the steppe yurt logo.
 - TVs see the DLNA server as `Khan-Nomad`.
 - The web address stays `http://nomad.local` (and `192.168.4.1`).
+- Interface files can be stored gzipped (`page.html.gz`, the card builder does this);
+  the firmware serves them compressed.
+- **No-card mode:** with no SD card the board still starts the `Khan-Nomad` hotspot
+  and serves a status page (yurt, connected devices, temperature, memory, uptime)
+  at every address, so phones usually pop it up after joining. The hotspot password
+  is per board, `khan` + the last 6 hex digits of its MAC, shown on the screen,
+  because the saved password lives on the card. Inserting a card restarts into the
+  normal Nomad.
+
+## Serial port gotcha
+
+With the USB mode Nomad uses (USB-OTG / TinyUSB), opening and then closing the
+board's serial port from a computer can restart it into **flashing mode**
+("waiting for download"): the app stops and the hotspot disappears. If the board
+seems dead after you read its log, press **RST** once. If an upload can't connect,
+hold **BOOT**, tap **RST**, release **BOOT**, upload, then press **RST**.

@@ -1509,11 +1509,21 @@ bool mountSDCard() {
 
 // No card at boot: say so on the little screen instead of sitting on "Booting..."
 // forever, and keep probing. inserting the card restarts into a normal boot
+static String startNoCardHotspot();   // defined after the web server object; returns the WiFi password
+
 static void sdBootHalt(const char *msg) {
   lv_obj_clear_flag(ui_MediaGen, LV_OBJ_FLAG_HIDDEN);
   lv_textarea_set_text(ui_MediaGen, msg);
+  // Khan-Nomad: keep the hotspot up with a small status page, so the board can be
+  // reached (and shown off) before a card goes in
+  String pass = startNoCardHotspot();
+  String screen = String(msg) + "\n\nWiFi: " + settings.wifiSSID + "\nPass: " + pass + "\n192.168.4.1";
+  lv_textarea_set_text(ui_MediaGen, screen.c_str());
   for (;;) {
     for (int i = 0; i < 100; ++i) { lv_timer_handler(); delay(30); }  // ~3s
+    Serial.printf("[NoCard] waiting for a card: AP %s, ssid \"%s\", ip %s, %d connected\n",
+                  (WiFi.getMode() & WIFI_AP) ? "on" : "OFF", WiFi.softAPSSID().c_str(),
+                  WiFi.softAPIP().toString().c_str(), WiFi.softAPgetStationNum());
     if (mountSDCard()) esp_restart();
   }
 }
@@ -1565,6 +1575,101 @@ String rfc3339Now() {
 
 // Captive DNS lives in NomadDNS.cpp (targeted responder, not a wildcard hijack)
 AsyncWebServer server(80); // Web server on port 80
+
+// ---------- Khan-Nomad no-card mode ----------
+// Served for every URL while there's no SD card. Phones that probe for a captive
+// portal get this page too, so it usually pops up by itself after joining.
+static const char KN_NOCARD_PAGE[] = R"KNPAGE(<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Khan-Nomad</title>
+<style>
+:root{--teal:#1B3A4B;--cream:#F6EFE3;--card:#FFFDF8;--ink:#2B2A26;--muted:#7A6F60;--line:#E6DBC8;--terra:#C8553D}
+@media (prefers-color-scheme:dark){:root{--cream:#0F2230;--card:#16303F;--ink:#F4E9D4;--muted:#A8B5BC;--line:#24475A;--terra:#D97B4A}}
+*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font:16px/1.5 -apple-system,Segoe UI,Roboto,sans-serif}
+header{background:var(--teal);color:#F4E9D4;display:flex;align-items:center;gap:10px;padding:12px 16px;font-weight:700;font-size:18px}
+.kilim{height:7px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='7'%3E%3Crect width='16' height='7' fill='%23C8553D'/%3E%3Cpath d='M8 .5l3 3-3 3-3-3z' fill='%23EBD9B4'/%3E%3Cpath d='M0 .5l3 3-3 3M16 .5l-3 3 3 3' fill='%231B3A4B'/%3E%3C/svg%3E") repeat-x}
+main{max-width:520px;margin:0 auto;padding:20px 16px}
+h1{font-family:Georgia,"Times New Roman",serif;font-weight:600;font-size:26px;margin:4px 0}
+.sub{color:var(--muted);margin:0 0 18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px}
+.hero{text-align:center}.hero svg{width:120px;height:120px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px}
+.stat b{display:block;font-size:22px}.stat span{color:var(--muted);font-size:13px}
+ol{margin:6px 0 0;padding-left:20px}li{margin:4px 0}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--terra);margin-right:6px;animation:p 1.6s ease-in-out infinite}
+@keyframes p{50%{opacity:.25}}@media (prefers-reduced-motion:reduce){.dot{animation:none}}
+code{background:var(--line);border-radius:6px;padding:1px 6px}
+</style></head><body>
+<header><svg width="30" height="30" viewBox="0 0 120 120"><rect width="120" height="120" rx="26" fill="#12293A"/><path d="M54.3 34.3A8 8 0 0 1 65.7 34.3M50.1 30.1A14 14 0 0 1 69.9 30.1" fill="none" stroke="#F4E9D4" stroke-width="4" stroke-linecap="round"/><path d="M22 66Q60 26 98 66Z" fill="#D97B4A"/><rect x="28" y="64" width="64" height="30" rx="2" fill="#EBD9B4"/><rect x="28" y="68" width="64" height="5" fill="#C8553D"/><rect x="53" y="76" width="14" height="18" rx="2" fill="#6B2D1F"/></svg>Khan-Nomad</header>
+<div class="kilim"></div>
+<main>
+<div class="card hero">
+<svg viewBox="0 0 120 120" aria-hidden="true"><rect width="120" height="120" rx="26" fill="#1B3A4B"/><circle cx="24" cy="24" r="1.6" fill="#F4E9D4"/><circle cx="96" cy="18" r="2" fill="#F4E9D4"/><circle cx="102" cy="44" r="1.4" fill="#F4E9D4"/><path d="M54.3 34.3A8 8 0 0 1 65.7 34.3M50.1 30.1A14 14 0 0 1 69.9 30.1M45.9 25.9A20 20 0 0 1 74.1 25.9" fill="none" stroke="#F4E9D4" stroke-width="3.6" stroke-linecap="round"/><path d="M22 66Q60 26 98 66Z" fill="#D97B4A"/><rect x="28" y="64" width="64" height="30" rx="2" fill="#EBD9B4"/><rect x="28" y="68" width="64" height="5" fill="#C8553D"/><path d="M34 70.5l3-2.5 3 2.5-3 2.5zM46 70.5l3-2.5 3 2.5-3 2.5zM68 70.5l3-2.5 3 2.5-3 2.5zM80 70.5l3-2.5 3 2.5-3 2.5z" fill="#EBD9B4"/><rect x="53" y="76" width="14" height="18" rx="2" fill="#6B2D1F"/><ellipse cx="60" cy="46" rx="6" ry="2.6" fill="#6B2D1F"/><rect x="14" y="94" width="92" height="3" rx="1.5" fill="#EBD9B4" opacity=".55"/></svg>
+<h1>Khan-Nomad is running</h1>
+<p class="sub"><span class="dot"></span>Waiting for a microSD card &middot; SD kart bekleniyor</p>
+</div>
+<div class="grid">
+<div class="stat"><b id="users">-</b><span>connected</span></div>
+<div class="stat"><b id="temp">-</b><span>chip temperature</span></div>
+<div class="stat"><b id="ram">-</b><span>free memory</span></div>
+<div class="stat"><b id="up">-</b><span>running for</span></div>
+</div>
+<div class="card" style="margin-top:12px">
+<b>Next steps</b>
+<ol><li>On a computer, build the card: <code>python tools/card-builder/build_card.py E:\</code></li>
+<li>Put the card in the Nomad. It restarts by itself and the full library opens here.</li></ol>
+</div>
+</main>
+<script>
+function fmt(s){const h=Math.floor(s/3600),m=Math.floor(s%3600/60);return h?h+'h '+m+'m':m+'m '+(s%60)+'s'}
+async function tick(){try{const r=await fetch('/api/nocard',{cache:'no-store'});const j=await r.json();
+document.getElementById('users').textContent=j.users;
+document.getElementById('temp').textContent=j.temp.toFixed(1)+' \u00B0C';
+document.getElementById('ram').textContent=Math.round((j.heap+j.psram)/1048576*10)/10+' MB';
+document.getElementById('up').textContent=fmt(j.uptime);}catch(e){}}
+tick();setInterval(tick,3000);
+</script>
+</body></html>)KNPAGE";
+
+static String startNoCardHotspot() {
+  // The saved WiFi password lives on the card, so without one we'd fall back to the
+  // well-known default "password". Use a per-board password from the chip's MAC
+  // instead (shown on the device's own screen), so only someone holding it can join.
+  String pass = settings.wifiPassword;
+  if (pass.length() < 8 || pass == "password") {
+    uint8_t mac[6];
+    WiFi.macAddress(mac);
+    char buf[16];
+    snprintf(buf, sizeof(buf), "khan%02x%02x%02x", mac[3], mac[4], mac[5]);
+    pass = buf;
+  }
+  bool modeOk = WiFi.mode(WIFI_AP);
+  bool apOk = WiFi.softAP(settings.wifiSSID.c_str(), pass.c_str(), 1, 0, MAX_CLIENTS);
+  Serial.printf("[NoCard] WiFi.mode(AP)=%d softAP=%d ip=%s\n", modeOk, apOk, WiFi.softAPIP().toString().c_str());
+  delay(100);
+  nomadDnsSetCatchAll(true);          // every name resolves here, so phones show the page
+  nomadDnsStart(WiFi.softAPIP());
+  server.on("/api/nocard", HTTP_GET, [](AsyncWebServerRequest *request) {
+    String j = String("{\"users\":") + WiFi.softAPgetStationNum() +
+               ",\"temp\":" + String(temperatureRead(), 1) +
+               ",\"heap\":" + ESP.getFreeHeap() +
+               ",\"psram\":" + ESP.getFreePsram() +
+               ",\"uptime\":" + (millis() / 1000) + "}";
+    AsyncWebServerResponse *r = request->beginResponse(200, "application/json", j);
+    r->addHeader("Cache-Control", "no-store");
+    request->send(r);
+  });
+  server.onNotFound([](AsyncWebServerRequest *request) {
+    AsyncWebServerResponse *r = request->beginResponse(200, "text/html", KN_NOCARD_PAGE);
+    r->addHeader("Cache-Control", "no-store");
+    request->send(r);
+  });
+  server.begin();
+  Serial.printf("[NoCard] hotspot \"%s\" up at %s (password on the screen), status page on every URL\n",
+                settings.wifiSSID.c_str(), WiFi.softAPIP().toString().c_str());
+  return pass;
+}
 std::map<AsyncWebServerRequest*, File> activeUploads;
 int connectedClients = 0;
 // LED Mode and Color Helper Wrappers
