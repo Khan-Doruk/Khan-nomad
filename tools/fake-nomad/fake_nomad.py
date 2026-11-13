@@ -59,7 +59,7 @@ EXTRA_MIME = {
 DEFAULT_SETTINGS = {
     "rgbMode": "off", "rgbColor": "#ff0000", "adminPassword": "", "adminPasswordSet": False,
     "wifiSSID": "Khan-Nomad", "wifiPassword": "password", "brightness": 100,
-    "autoGenerateMedia": True, "flipScreen": False, "dlnaEnabled": True, "dnsCatchAll": False,
+    "autoGenerateMedia": True, "flipScreen": False, "dlnaEnabled": True, "dnsCatchAll": False, "wifiPower": "medium",
 }
 
 FAKE_CARD_TOTAL = 128 * 1000**3  # pretend the card is 128 GB

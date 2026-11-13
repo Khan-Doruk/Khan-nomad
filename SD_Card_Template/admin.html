@@ -1051,6 +1051,14 @@ body.dark .rgb-buttons .btn[aria-pressed="true"] { color: #24140C; }
           <label class="form-label">Password</label>
           <input type="text" id="wifi-password" class="form-control">
         </div>
+        <div class="form-group">
+          <label class="form-label" for="wifi-power">WiFi power</label>
+          <select id="wifi-power" class="form-control">
+            <option value="low">Low: coolest, about one room</option>
+            <option value="medium" selected>Medium: balanced (default)</option>
+            <option value="high">High: most range, warmest</option>
+          </select>
+        </div>
         <button onclick="updateWiFiSettings()" class="btn btn-primary">Update WiFi</button>
       </div>
 
