@@ -23,6 +23,10 @@
     'Search everything on this card, wiki articles...': 'Bu karttaki her şeyde, wiki makalelerinde ara...',
     'Search': 'Ara', 'Search results': 'Arama sonuçları', 'Categories': 'Kategoriler',
     'Language': 'Dil',
+    'WiFi power': 'WiFi gücü',
+    'Low: coolest, about one room': 'Düşük: en serin, yaklaşık bir oda',
+    'Medium: balanced (default)': 'Orta: dengeli (varsayılan)',
+    'High: most range, warmest': 'Yüksek: en uzun menzil, en sıcak',
     // archive, admin, readers, movie info
     'Library': 'Kütüphane', 'Refresh': 'Yenile', 'All articles': 'Tüm makaleler',
     'Previous article': 'Önceki makale', 'Next article': 'Sonraki makale',

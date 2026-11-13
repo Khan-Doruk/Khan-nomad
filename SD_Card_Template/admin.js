@@ -362,6 +362,9 @@ async function loadSettings() {
     if (s.wifiPassword !== undefined && s.wifiPassword !== '__set__') {
       document.getElementById('wifi-password').value = s.wifiPassword;
     }
+    if (s.wifiPower && document.getElementById('wifi-power')) {
+      document.getElementById('wifi-power').value = s.wifiPower;
+    }
 
     // brightness 0-100, clamp a stale value (old default was 230 -> showed 230%)
     if (s.brightness !== undefined) {
@@ -417,7 +420,8 @@ async function saveSettings() {
       brightness: parseInt(document.getElementById('brightness').value),
       autoGenerateMedia: document.getElementById('auto-generate').checked,
       flipScreen: document.getElementById('flip-screen').checked,
-      dlnaEnabled: document.getElementById('dlna-enabled') ? document.getElementById('dlna-enabled').checked : true
+      dlnaEnabled: document.getElementById('dlna-enabled') ? document.getElementById('dlna-enabled').checked : true,
+      wifiPower: document.getElementById('wifi-power') ? document.getElementById('wifi-power').value : 'medium'
     };
 
     const res = await adminFetch('/settings', {
@@ -564,7 +568,7 @@ function updateWiFiSettings() {
   }
   
   saveSettings();
-  alert('WiFi settings updated. Changes will take effect after restart.');
+  alert('WiFi settings updated. WiFi power applies now; name and password changes take effect after restart.');
 }
 
 // Brightness control

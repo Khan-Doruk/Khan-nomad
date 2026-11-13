@@ -384,9 +384,23 @@ struct AdminSettings {
   // legacy wildcard captive DNS (answer every lookup with Nomad's address).
   // off = targeted responder, so phones keep using mobile data for the internet
   bool dnsCatchAll = false;
+  // Khan-Nomad: WiFi transmit power. The hotspot transmits nonstop and the board
+  // runs warm; "medium" (13 dBm) is about a quarter of "high" (19.5 dBm) and still
+  // covers a room or two. "low" is 8.5 dBm.
+  String wifiPower = "medium";
 };
 
 AdminSettings settings;
+
+// apply settings.wifiPower to the radio; safe to call any time the radio is on
+static void applyWifiPower() {
+  wifi_power_t p = WIFI_POWER_13dBm;
+  if (settings.wifiPower == "low") p = WIFI_POWER_8_5dBm;
+  else if (settings.wifiPower == "high") p = WIFI_POWER_19_5dBm;
+  bool ok = WiFi.setTxPower(p);
+  Serial.printf("[WiFi] transmit power %s (%.1f dBm) %s\n", settings.wifiPower.c_str(),
+                WiFi.getTxPower() / 4.0f, ok ? "applied" : "FAILED");
+}
 // Set by the /settings handler (async_tcp task); consumed by the task that owns
 // LVGL flushes. MADCTL must never be written mid-flush from another task.
 volatile bool lcdRotatePending = false;
@@ -1281,6 +1295,9 @@ bool loadSettings() {
   settings.staPassword = doc["staPassword"] | "";
   settings.staPersist = doc["staPersist"] | false;
   settings.dnsCatchAll = doc["dnsCatchAll"] | false;
+  settings.wifiPower = doc["wifiPower"] | "medium";
+  if (settings.wifiPower != "low" && settings.wifiPower != "medium" && settings.wifiPower != "high")
+    settings.wifiPower = "medium";
 
   return true;
 }
@@ -1383,6 +1400,7 @@ bool saveSettings() {
   sdoc["staPassword"] = settings.staPassword;
   sdoc["staPersist"] = settings.staPersist;
   sdoc["dnsCatchAll"] = settings.dnsCatchAll;
+  sdoc["wifiPower"] = settings.wifiPower;
   String json;
   serializeJson(sdoc, json);
 
@@ -1413,6 +1431,7 @@ bool saveSettings() {
   doc["staPassword"] = settings.staPassword;
   doc["staPersist"] = settings.staPersist;
   doc["dnsCatchAll"] = settings.dnsCatchAll;
+  doc["wifiPower"] = settings.wifiPower;
 
   bool success = serializeJson(doc, file) > 0;
   file.close();
@@ -1647,6 +1666,7 @@ static String startNoCardHotspot() {
   bool modeOk = WiFi.mode(WIFI_AP);
   bool apOk = WiFi.softAP(settings.wifiSSID.c_str(), pass.c_str(), 1, 0, MAX_CLIENTS);
   Serial.printf("[NoCard] WiFi.mode(AP)=%d softAP=%d ip=%s\n", modeOk, apOk, WiFi.softAPIP().toString().c_str());
+  applyWifiPower();
   delay(100);
   nomadDnsSetCatchAll(true);          // every name resolves here, so phones show the page
   nomadDnsStart(WiFi.softAPIP());
@@ -4063,6 +4083,7 @@ void startNetwork() {
 
   if (wantSta && startStationMode()) {
     g_staMode = true;
+    applyWifiPower();
     // no captive DNS in station mode: the router owns DNS on this network
     startNomadMDNS();
   } else {
@@ -4074,6 +4095,7 @@ void startNetwork() {
     webLogf("info", "Starting WiFi Access Point with SSID: '%s'", settings.wifiSSID.c_str());
     WiFi.mode(WIFI_AP);
     WiFi.softAP(settings.wifiSSID.c_str(), settings.wifiPassword.c_str(), 1, 0, MAX_CLIENTS);
+    applyWifiPower();
     ensureApDhcpServer("boot-initial");  // make sure clients get a lease, not APIPA (issue #126)
     webLogf("success", "WiFi Access Point started successfully - IP: %s", WiFi.softAPIP().toString().c_str());
     nomadDnsSetCatchAll(settings.dnsCatchAll);
@@ -5905,6 +5927,7 @@ server.on("/settings", HTTP_GET, [](AsyncWebServerRequest *request){
   doc["flipScreen"] = settings.flipScreen;
   doc["dlnaEnabled"] = settings.dlnaEnabled;
   doc["dnsCatchAll"] = settings.dnsCatchAll;
+  doc["wifiPower"] = settings.wifiPower;
 
   String json;
   serializeJson(doc, json);
@@ -5946,6 +5969,13 @@ server.on("/settings", HTTP_POST, [](AsyncWebServerRequest *request){
   if (doc.containsKey("dnsCatchAll")) {
     settings.dnsCatchAll = doc["dnsCatchAll"].as<bool>();
     nomadDnsSetCatchAll(settings.dnsCatchAll);  // applies live, no restart
+  }
+  if (doc.containsKey("wifiPower")) {
+    String p = doc["wifiPower"].as<String>();
+    if (p == "low" || p == "medium" || p == "high") {
+      settings.wifiPower = p;
+      applyWifiPower();  // applies live, no restart
+    }
   }
   if (doc.containsKey("flipScreen")) {
     bool newFlip = doc["flipScreen"].as<bool>();
