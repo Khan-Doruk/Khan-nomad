@@ -24,7 +24,7 @@ for: built-in 1.47" screen, microSD slot and RGB LED, so no wiring is needed.
 
 ### Before the board arrives
 
-- [ ] Print the case: `NomadCasev30.stl` (the USB-A one, not `_USB-C`)
+- [ ] Print the case: `NomadCasev30_KhanNomad_Vented.stl` (USB-A, vented, see [tools/case](../../tools/case/README.md))
 - [ ] Convert movies to MP4 with the preset in `tools/handbrake`
 - [ ] Collect music (MP3), books (ePub/PDF), comics (CBZ)
 - [ ] Download a Wikipedia ZIM from Kiwix (`mini` 13 GB, `nopic` 49 GB, `maxi` 119 GB)

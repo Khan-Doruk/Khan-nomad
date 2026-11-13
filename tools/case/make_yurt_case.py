@@ -25,8 +25,8 @@ from shapely.geometry import LineString, Point, Polygon, box
 from shapely.ops import unary_union
 
 DEPTH = 0.6          # mm engraved into the outside face (3 layers at 0.2 mm)
-SCALE = 0.19         # mm per logo unit (logo.svg viewBox is 120 x 120)
-CENTER = (20.0, 61.7)  # bed coordinates: the old tree logo's spot, centred on the face
+SCALE = 0.17         # mm per logo unit (logo.svg viewBox is 120 x 120)
+CENTER = (25.4, 61.7)  # bed coordinates: on the 2.2 mm plate, clear of the 0.4 mm pocket near the top end
 LOGO_CENTER = (60.0, 58.5)  # centre of the yurt drawing in logo units
 
 
