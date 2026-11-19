@@ -60,6 +60,7 @@ isn't there. If the board runs the original Jcorp Nomad firmware, add
 | `--convert` | convert unplayable videos to MP4 with ffmpeg |
 | `--no-gzip` | store the interface uncompressed (original firmware) |
 | `--no-interface` | only sort media |
+| `--wiki-only` | make the home page a Wikipedia front page (topic shelves, Surprise me, Continue reading) instead of the media menu. Writes `home.json`; delete it to get the media menu back |
 
 ## After building
 

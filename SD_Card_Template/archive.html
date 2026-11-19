@@ -839,6 +839,18 @@ async function listUrlForHit(hit){
   return (r && r.url) || null;
 }
 
+// Khan-Nomad: the Wikipedia home's "Continue reading" list (this phone only)
+function rememberRecent(hit){
+  try {
+    if (!hit || !hit.title || hit.cluster == null) return;
+    const k = 'kn_wiki_recent', a = +hit.archiveIdx;
+    let r = JSON.parse(localStorage.getItem(k) || '[]');
+    r = r.filter(x => !(x.a === a && x.c === hit.cluster && x.b === hit.blob));
+    r.unshift({ a: a, c: hit.cluster, b: hit.blob, t: hit.title });
+    localStorage.setItem(k, JSON.stringify(r.slice(0, 8)));
+  } catch(e){}
+}
+
 // Open by location; push onto history unless we're navigating history.
 let navigatingHistory=false;
 async function openArticle(hit, resetHistory){
@@ -869,6 +881,7 @@ async function openArticle(hit, resetHistory){
     }
     navigatingHistory=false;
     updateHistoryButtons();
+    rememberRecent(hit);
     document.getElementById('search-results').style.display='none';
 
     // PDFs, videos, books and images indexed as entries open in their viewer, not as

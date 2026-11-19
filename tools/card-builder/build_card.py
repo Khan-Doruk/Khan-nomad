@@ -220,6 +220,8 @@ def main():
     ap.add_argument("--convert", action="store_true",
                     help="convert MKV/AVI/MOV... to MP4 with ffmpeg (slow; needs ffmpeg on PATH)")
     ap.add_argument("--no-interface", action="store_true", help="only sort media, don't touch the interface")
+    ap.add_argument("--wiki-only", action="store_true",
+                    help="make the home page a Wikipedia front page (topic shelves) instead of the media menu")
     ap.add_argument("--dry-run", action="store_true", help="show what would happen, change nothing")
     args = ap.parse_args()
 
@@ -250,6 +252,11 @@ def main():
             print("Interface: gzipped (needs the Khan-Nomad firmware; use --no-gzip for the original)")
         n = install_interface(card, not args.no_gzip, dry, rep)
         print(f"Interface: {n} files {'would be ' if dry else ''}installed, media folders ready")
+    if args.wiki_only:
+        if not dry:
+            with open(os.path.join(card, "home.json"), "w", encoding="utf-8") as f:
+                f.write('{"home": "wiki"}\n')
+        print("Home page: Wikipedia front page (delete home.json from the card to get the media menu back)")
 
     # ---- 3. media
     plan = plan_media(args.add) if args.add else []
