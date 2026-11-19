@@ -831,8 +831,30 @@
     .tile:nth-child(5){animation-delay:.12s} .tile:nth-child(6){animation-delay:.15s} .tile:nth-child(n+7){animation-delay:.18s}
   }
   @keyframes tileIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
+
+  /* Wikipedia-only home (wiki-home.js, on when /home.json says {"home":"wiki"}) */
+  body.kn-wiki .grid-wrap, body.kn-wiki #continueCard { display:none !important; }
+  .kn-wiki-home { width:100%; max-width:760px; box-sizing:border-box; margin:0 auto; }
+  .kn-wiki-count { margin:-4px 0 14px; text-align:center; font-size:13px; color:var(--muted); }
+  .kn-wiki-h { font-family:var(--kn-serif, Georgia, serif); font-size:15px; font-weight:600; color:var(--muted);
+    margin:18px 2px 8px; letter-spacing:.01em; }
+  .kn-topics { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:10px; }
+  .kn-topics .tile { flex:none; width:auto; min-width:0; font:inherit; color:inherit; cursor:pointer; }
+  @media (min-width:640px) { .kn-topics { grid-template-columns:repeat(5, minmax(0,1fr)); } }
+  .kn-surprise { display:flex; align-items:center; justify-content:center; gap:8px; width:100%; margin-top:12px;
+    padding:13px 16px; border:0; border-radius:999px; background:var(--primary); color:#fff; font:inherit;
+    font-weight:600; cursor:pointer; }
+  .kn-surprise svg { width:20px; height:20px; }
+  .kn-surprise:active { transform:scale(.98); }
+  .kn-wiki-status { margin:10px 0 0; text-align:center; font-size:13px; color:var(--muted); }
+  .kn-recent { display:flex; flex-direction:column; gap:6px; }
+  .kn-recent-row { display:block; padding:11px 14px; border-radius:12px; background:var(--card);
+    border:1px solid var(--card-border, rgba(0,0,0,.08)); color:var(--text); text-decoration:none;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .kn-all-pages { display:block; width:max-content; margin:22px auto 8px; font-size:13px; color:var(--muted); }
 </style>
 <script src="/i18n.js"></script>
+<script src="/wiki-home.js"></script>
 </head>
 <body>
   <div class="page-bg" aria-hidden="true"></div>
